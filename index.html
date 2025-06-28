@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Betya Wager App</title>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <script>
+    emailjs.init("FueE3eIh4qU7etu9W");
+  </script>
+  <style>
+    body {
+      background-color: #0a0a0a;
+      color: #00ffcc;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 1rem;
+    }
+    .button {
+      background-color: #00ffcc;
+      border: none;
+      padding: 0.6rem 1rem;
+      color: #000;
+      font-weight: bold;
+      margin: 0.5rem;
+      cursor: pointer;
+    }
+    .input {
+      padding: 0.4rem;
+      margin: 0.4rem;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #111;
+      padding: 1rem;
+      border: 2px solid #00ffcc;
+    }
+    #openWagersList, #myWagersList {
+      margin-top: 1rem;
+    }
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 10px 20px;
+      background: #222;
+      color: white;
+      border-radius: 5px;
+      z-index: 1000;
+      font-weight: bold;
+    }
+    .toast.success { background: #00cc88; }
+    .toast.error { background: #cc0033; }
+  </style>
+</head>
+<body>
+  <h1>Betya Wager App</h1>
+  <button class="button" onclick="document.getElementById('profileModal').style.display='block'">Create Profile</button>
+  <button class="button" onclick="document.getElementById('loginModal').style.display='block'">Login</button>
+
+  <div id="profileModal" class="modal">
+    <h2>Create Profile</h2>
+    <input class="input" id="profileName" placeholder="Name" />
+    <input class="input" id="profileEmail" placeholder="Email" />
+    <input class="input" id="profileBalance" placeholder="Initial Balance" type="number" />
+    <button class="button" onclick="createProfile()">Submit</button>
+  </div>
+
+  <div id="loginModal" class="modal">
+    <h2>Login</h2>
+    <input class="input" id="loginName" placeholder="Enter Name" />
+    <button class="button" onclick="loginUser()">Login</button>
+  </div>
+
+  <div id="userInfo"></div>
+
+  <h2>Create Wager</h2>
+  <input class="input" id="opponentName" placeholder="Opponent Name" />
+  <input class="input" id="wagerTerms" placeholder="Wager Terms" />
+  <input class="input" id="wagerAmount" placeholder="Amount" type="number" />
+  <input class="input" id="wagerEndDate" type="datetime-local" placeholder="End Date & Time" />
+  <button class="button" onclick="submitWager()">Submit Wager</button>
+
+  <h2>Open Wagers (Pending Confirmation)</h2>
+  <div id="openWagersList"></div>
+
+  <h2>My Wager History</h2>
+  <div id="myWagersList"></div>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+  import { getDatabase, ref, set, update, onValue, get, child } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCf730VWvXKqmpYtF5RddI2GAnCd0jLTcU",
+    authDomain: "betya-a767f.firebaseapp.com",
+    projectId: "betya-a767f",
+    storageBucket: "betya-a767f.appspot.com",
+    messagingSenderId: "944512270849",
+    appId: "1:944512270849:web:6dcea5b5c91fe56f66b600"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  let currentUser = null;
+  
+  function sanitizeKey(str) {
+    return String(str).replace(/[.#$/\[\]]/g, '_'); // escape all forbidden chars
+}
+
+  function showToast(message, success = true) {
+      const toast = document.createElement("div");
+      toast.className = `toast ${success ? "success" : "error"}`;
+      toast.innerText = message;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    setInterval(loadAllWagers, 60000);
+
+    window.createProfile = function () {
+      const name = document.getElementById("profileName").value.trim();
+      const email = document.getElementById("profileEmail").value.trim();
+      const balance = parseFloat(document.getElementById("profileBalance").value);
+      const id = sanitizeKey(name.toLowerCase());
+      currentUser = { id, name, email, balance };
+      set(ref(db, "users/" + id), currentUser).then(() => {
+        displayUserInfo();
+        document.getElementById("profileModal").style.display = 'none';
+        loadAllWagers();
+      });
+    }
+
+    window.loginUser = function () {
+      const name = document.getElementById("loginName").value.trim();
+      const id = name.toLowerCase();
+      get(child(ref(db), `users/${id}`)).then(snapshot => {
+        if (snapshot.exists()) {
+          currentUser = snapshot.val();
+          displayUserInfo();
+          document.getElementById("loginModal").style.display = 'none';
+          loadAllWagers();
+        } else {
+          alert("User not found. Please create a profile first.");
+        }
+      });
+    }
+
+    window.submitWager = function () {
+      if (!currentUser) return alert("Please log in or create a profile first.");
+      const opponentInput = document.getElementById("opponentName").value.trim();
+      const opponentId = opponentInput.toLowerCase();
+      const terms = document.getElementById("wagerTerms").value;
+      const amount = parseFloat(document.getElementById("wagerAmount").value);
+      const endDate = document.getElementById("wagerEndDate").value;
+
+      if (!opponentId || !terms || isNaN(amount) || !endDate) {
+        return alert("Please fill out all wager fields, including the end date.");
+      }
+
+      get(child(ref(db), `users/${opponentId}`)).then(snapshot => {
+        if (!snapshot.exists()) return alert("Opponent not found.");
+        const match = snapshot.val();
+
+        const wager = {
+          id: Date.now(),
+          from: currentUser.name,
+          from_email: currentUser.email,
+          to: match.name,
+          to_email: match.email,
+          terms,
+          amount,
+          endDate,
+          status: "pending"
+        };
+
+        set(ref(db, "wagers/" + wager.id), wager).then(() => {
+          sendWagerEmail(match.email, wager);
+          showToast("Wager submitted and email sent!");
+          loadAllWagers();
+        });
+      });
+    }
+
+    
+    function displayUserInfo() {
+      const infoBox = document.getElementById("userInfo");
+      if (currentUser) {
+        infoBox.innerText = `Logged in as ${currentUser.name} ($${currentUser.balance})`;
+      } else {
+        infoBox.innerText = "";
+      }
+    }
+
+    function sendWagerEmail(to, wager) {
+      const safeName = wager.to?.charAt(0).toUpperCase() + wager.to?.slice(1).toLowerCase() || "User";
+      const payload = {
+        email: to,
+        name: safeName,
+        message: `You have been challenged: ${wager.terms} for $${wager.amount} (Ends on ${wager.endDate})`
+      };
+
+      emailjs.send("service_rb000hx", "template_61lncek", payload)
+        .then(() => showToast("Wager email sent!"))
+        .catch((err) => {
+          console.error("EmailJS wager error:", err);
+          showToast("Failed to send wager email.", false);
+        });
+    }
+
+    function loadAllWagers() {
+      const now = new Date();
+      onValue(ref(db, "wagers"), snapshot => {
+        const wagers = snapshot.val();
+        const openList = document.getElementById("openWagersList");
+        const myHistory = document.getElementById("myWagersList");
+        openList.innerHTML = "";
+        myHistory.innerHTML = "";
+
+        for (let key in wagers) {
+          const wager = wagers[key];
+
+          if (wager.status === "confirmed" && !wager.notified && new Date(wager.endDate) <= now) {
+            const reminderTo = {
+              email: wager.to_email,
+              name: wager.to,
+              message: `The wager between ${wager.from} and ${wager.to} has ended. Please log in and confirm the result.`
+            };
+            const reminderFrom = {
+              email: wager.from_email,
+              name: wager.from,
+              message: `The wager between ${wager.from} and ${wager.to} has ended. Please log in and confirm the result.`
+            };
+
+            Promise.all([
+              emailjs.send("service_rb000hx", "template_gpgrph4", reminderTo),
+              emailjs.send("service_rb000hx", "template_gpgrph4", reminderFrom)
+            ]).then(() => {
+              wager.notified = true;
+              set(ref(db, "wagers/" + wager.id), wager);
+            }).catch(err => {
+              console.error("Reminder email error:", err);
+            });
+          }
+
+          if (wager.to?.toLowerCase() === currentUser?.name.toLowerCase() && wager.status === "pending") {
+            const div = document.createElement("div");
+            div.innerHTML = `${wager.from} vs ${wager.to}: ${wager.terms} - $${wager.amount} (Ends: ${wager.endDate})`;
+            const btn = document.createElement("button");
+            btn.innerText = "Confirm";
+            btn.className = "button";
+            btn.onclick = () => confirmWager(wager);
+            div.appendChild(btn);
+            openList.appendChild(div);
+          }
+
+          if (wager.to?.toLowerCase() === currentUser?.name.toLowerCase() || wager.from?.toLowerCase() === currentUser?.name.toLowerCase()) {
+            const row = document.createElement("div");
+            row.innerText = `${wager.from} vs ${wager.to}: ${wager.terms} - $${wager.amount} [${wager.status}] (Ends: ${wager.endDate})`;
+            if (wager.status === "confirmed" && new Date() > new Date(wager.endDate)) {
+              const isFrom = wager.from.toLowerCase() === currentUser.name.toLowerCase();
+              const alreadySubmitted = isFrom ? wager.from_result : wager.to_result;
+              if (!alreadySubmitted) {
+                const form = document.createElement("div");
+                form.innerHTML = `<p>Select winner:</p>`;
+                const select = document.createElement("select");
+                select.innerHTML = `
+                  <option value="">-- Choose --</option>
+                  <option value="${wager.from}">${wager.from}</option>
+                  <option value="${wager.to}">${wager.to}</option>
+                `;
+                const submit = document.createElement("button");
+                submit.innerText = "Submit Result";
+                submit.className = "button";
+                submit.onclick = () => {
+                  const winner = select.value;
+                  if (!winner) return alert("Please choose a winner");
+                  const resultKey = isFrom ? "from_result" : "to_result";
+                  wager[resultKey] = winner;
+                  let updatedStatus = wager.status;
+                  if (wager.from_result && wager.to_result) {
+                    updatedStatus = wager.from_result === wager.to_result ? "completed" : "disputed";
+                  }
+                  set(ref(db, "wagers/" + wager.id), { ...wager, status: updatedStatus }).then(() => {
+                      if (updatedStatus === "completed") {
+                        get(ref(db, `escrow/${wager.id}`)).then(escrowSnap => {
+                          if (escrowSnap.exists()) {
+                            const escrow = escrowSnap.val();
+                            const payout = escrow.total;
+                            const winnerId = winner.toLowerCase();
+                            const safeWinnerId = sanitizeKey(winnerId);
+                            const userPath = `users/${safeWinnerId}`; // ✅ Correct
+                            const safeWagerId = sanitizeKey(wager.id);
+
+                            get(child(ref(db), `users/${safeWinnerId}`)).then(userSnap => {
+                              if (userSnap.exists()) {
+                                const winnerUser = userSnap.val();
+                                const newBalance = (winnerUser.balance || 0) + payout;
+                                
+                                const updates = {};
+                                updates[`${userPath}/balance`] = newBalance;
+ 
+                                updates[`escrow/${safeWagerId}`] = null;
+
+                                console.log("Updating path:", `${userPath}/balance`);
+
+                                update(ref(db), updates).then(() => {
+                                  showToast("Escrow released to winner.");
+                                });
+
+                              }
+                            });
+                          }
+                        });
+                      }
+                    showToast("Result submitted");
+                    if (updatedStatus === "completed") {
+                      const winner = wager.from_result;
+                      const loser = wager.from_result === wager.from ? wager.to : wager.from;
+                      const winnerEmail = wager.from_result === wager.from ? wager.from_email : wager.to_email;
+                      const loserEmail = wager.from_result === wager.from ? wager.to_email : wager.from_email;
+
+                      const winnerPayload = {
+                        email: winnerEmail,
+                        name: winner,
+                        message: `Congratulations ${winner}, you won the wager: \"${wager.terms}\" and claimed $${wager.amount}!`
+                      };
+
+                      const loserPayload = {
+                        email: loserEmail,
+                        name: loser,
+                        message: `The wager: \"${wager.terms}\" has been completed. ${winner} has been declared the winner of $${wager.amount}.`
+                      };
+
+                      Promise.all([
+                        emailjs.send("service_rb000hx", "template_resultwin", winnerPayload),
+                        emailjs.send("service_rb000hx", "template_resultwin", loserPayload)
+                      ]).then(() => {
+                        showToast("Result emails sent!");
+                      }).catch(err => {
+                        console.error("Result email error:", err);
+                      });
+                    }
+                    loadAllWagers();
+                  });
+                };
+                form.appendChild(select);
+                form.appendChild(submit);
+                row.appendChild(form);
+              }
+            }
+            myHistory.appendChild(row);
+          }
+        }
+      });
+    }
+
+    function confirmWager(wager) {
+  const fromId = wager.from.toLowerCase();
+  const toId = wager.to.toLowerCase();
+  const amount = wager.amount;
+
+  Promise.all([
+    get(child(ref(db), `users/${fromId}`)),
+    get(child(ref(db), `users/${toId}`))
+  ])
+  .then(([fromSnap, toSnap]) => {
+    if (!fromSnap.exists() || !toSnap.exists()) {
+      return showToast("One of the users no longer exists", false);
+    }
+
+    const fromUser = fromSnap.val();
+    const toUser = toSnap.val();
+
+    if (fromUser.balance < amount || toUser.balance < amount) {
+      return showToast("Insufficient balance for one or both users", false);
+    }
+
+    const updates = {};
+    updates[`users/${fromId}/balance`] = fromUser.balance - amount;
+    updates[`users/${toId}/balance`] = toUser.balance - amount;
+    updates[`escrow/${wager.id}`] = {
+      from: amount,
+      to: amount,
+      total: amount * 2
+    };
+    wager.status = "confirmed";
+    updates[`wagers/${wager.id}`] = wager;
+
+    return update(ref(db), updates);
+  })
+  .then(() => {
+    sendConfirmationEmail(wager);
+    loadAllWagers();
+    showToast("Wager confirmed and funds moved to escrow.");
+  })
+  .catch(err => {
+    console.error("Error during escrow setup:", err);
+    showToast("Error confirming wager", false);
+  });
+}
+});
+
+
+    function sendConfirmationEmail(wager) {
+      const payloadTo = {
+        email: wager.to_email,
+        name: wager.to,
+        message: `Wager confirmed: ${wager.terms} for $${wager.amount} (Ends on ${wager.endDate})`
+      };
+
+      const payloadFrom = {
+        email: wager.from_email,
+        name: wager.from,
+        message: `Wager confirmed: ${wager.terms} for $${wager.amount} (Ends on ${wager.endDate})`
+      };
+
+      Promise.all([
+        emailjs.send("service_rb000hx", "template_pli2dzw", payloadTo),
+        emailjs.send("service_rb000hx", "template_pli2dzw", payloadFrom)
+      ])
+      .then(() => showToast("Confirmation emails sent to both users!"))
+      .catch((err) => {
+        console.error("EmailJS confirm error:", err);
+        showToast("Failed to send confirmation emails.", false);
+      });
+  }
+  </script>
+  </body>
+  </html>
