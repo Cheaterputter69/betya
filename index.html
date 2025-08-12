@@ -527,60 +527,62 @@
             if (mode === 'create') {
                 modalTitle.textContent = 'Create Profile';
                 modalFields.innerHTML = `
-        <input type="text" placeholder="Username" style="width: 100%; padding: 0.75rem; margin-bottom: 0.75rem; border-radius: 0.5rem; background: rgba(255,255,255,0.1); border: none; color: white;">
-        <input type="email" placeholder="Email" style="width: 100%; padding: 0.75rem; margin-bottom: 0.75rem; border-radius: 0.5rem; background: rgba(255,255,255,0.1); border: none; color: white;">
-        <input type="number" placeholder="Deposit Amount" style="width: 100%; padding: 0.75rem; margin-bottom: 0.75rem; border-radius: 0.5rem; background: rgba(255,255,255,0.1); border: none; color: white;">
-      `;
+            <input type="text" placeholder="Username" style="width: 100%; padding: 0.75rem; margin-bottom: 0.75rem; border-radius: 0.5rem; background: rgba(255,255,255,0.1); border: none; color: white;">
+            <input type="password" placeholder="Username Password" style="width: 100%; padding: 0.75rem; margin-bottom: 0.75rem; border-radius: 0.5rem; background: rgba(255,255,255,0.1); border: none; color: white;">
+            <input type="email" placeholder="Email" style="width: 100%; padding: 0.75rem; margin-bottom: 0.75rem; border-radius: 0.5rem; background: rgba(255,255,255,0.1); border: none; color: white;">
+            <input type="text" placeholder="Venmo Username" style="width: 100%; padding: 0.75rem; margin-bottom: 0.75rem; border-radius: 0.5rem; background: rgba(255,255,255,0.1); border: none; color: white;">
+            <input type="text" placeholder="Referral Code" style="width: 100%; padding: 0.75rem; margin-bottom: 0.75rem; border-radius: 0.5rem; background: rgba(255,255,255,0.1); border: none; color: white;">
+        `;
             } else {
                 modalTitle.textContent = 'Login';
                 modalFields.innerHTML = `
-        <input type="text" placeholder="Username" style="width: 100%; padding: 0.75rem; margin-bottom: 0.75rem; border-radius: 0.5rem; background: rgba(255,255,255,0.1); border: none; color: white;">
-      `;
+            <input type="text" placeholder="Username" style="width: 100%; padding: 0.75rem; margin-bottom: 0.75rem; border-radius: 0.5rem; background: rgba(255,255,255,0.1); border: none; color: white;">
+            <input type="password" placeholder="Password" style="width: 100%; padding: 0.75rem; margin-bottom: 0.75rem; border-radius: 0.5rem; background: rgba(255,255,255,0.1); border: none; color: white;">
+        `;
             }
             modalOverlay.style.display = 'flex';
         }
 
+
         function closeModal() {
             modalOverlay.style.display = 'none';
         }
+
+
         function handleModalAction() {
             const mode = modalTitle.textContent;
-            const username = document.querySelector('#modal-form-fields input[placeholder="Username"]').value;
+            const username = document.querySelector('#modal-form-fields input[placeholder="Username"]').value.trim();
 
             if (mode === 'Create Profile') {
-                const email = document.querySelector('#modal-form-fields input[placeholder="Email"]').value;
-                const deposit = parseFloat(document.querySelector('#modal-form-fields input[placeholder="Deposit Amount"]').value) || 0;
+                const password = document.querySelector('#modal-form-fields input[placeholder="Username Password"]').value.trim();
+                const email = document.querySelector('#modal-form-fields input[placeholder="Email"]').value.trim();
+                const venmoUsername = document.querySelector('#modal-form-fields input[placeholder="Venmo Username"]').value.trim();
+                const referralCode = document.querySelector('#modal-form-fields input[placeholder="Referral Code"]').value.trim();
 
-                if (!username || !email) {
-                    alert("Please fill out all fields.");
+                if (!username || !password || !email) {
+                    alert("Please fill out all required fields.");
                     return;
                 }
 
                 const uid = db.ref().push().key;
-                Promise.all([
-                    db.ref('users/' + uid).set({ username, email, deposit }),
-                    db.ref('usernames/' + username).set(uid)
-
-                ])
-
-
+                db.ref('users/' + uid).set({ username, password, email, venmoUsername, referralCode })
+                    .then(() => db.ref('usernames/' + username).set(uid))
                     .then(() => {
-                        window.currentUser = { uid, username };
+                        window.currentUser = { uid, username, email, venmoUsername, referralCode };
                         document.querySelector('.welcome').textContent = `Welcome, ${username}`;
                         document.getElementById('auth-buttons').style.display = 'none';
                         document.getElementById('user-info').style.display = 'block';
-                        document.getElementById('user-display').textContent = `${username} | $${deposit.toFixed(2)}`;
-                        updateProfileButtonStatus(); // ← Add this
+                        document.getElementById('user-display').textContent = username;
+                        updateProfileButtonStatus();
                         closeModal();
-
                     })
-                    .catch(error => {
-                        alert(error.message);
-                    });
+                    .catch(error => alert(error.message));
 
             } else if (mode === 'Login') {
-                if (!username) {
-                    alert("Please enter your username.");
+                const password = document.querySelector('#modal-form-fields input[placeholder="Password"]').value.trim();
+
+                if (!username || !password) {
+                    alert("Please enter both username and password.");
                     return;
                 }
 
@@ -591,22 +593,23 @@
 
                         return db.ref('users/' + uid).once('value').then(userSnap => {
                             const userData = userSnap.val();
-                            window.currentUser = { uid, username: userData.username };
+                            if (!userData || userData.password !== password) {
+                                throw new Error("Incorrect password.");
+                            }
 
+                            window.currentUser = { uid, username: userData.username, email: userData.email, venmoUsername: userData.venmoUsername, referralCode: userData.referralCode };
                             document.querySelector('.welcome').textContent = `Welcome, ${userData.username}`;
                             document.getElementById('auth-buttons').style.display = 'none';
                             document.getElementById('user-info').style.display = 'block';
-                            document.getElementById('user-display').textContent = `${userData.username} | $${userData.deposit.toFixed(2)}`;
-                            updateProfileButtonStatus(); // ← ADD THIS LINE
+                            document.getElementById('user-display').textContent = userData.username;
+                            updateProfileButtonStatus();
                             closeModal();
-
                         });
                     })
-                    .catch(error => {
-                        alert(error.message);
-                    });
+                    .catch(error => alert(error.message));
             }
         }
+
 
         function openProfileModal() {
             loadPendingWagers();
@@ -792,6 +795,37 @@
             });
         }
 
+        function determinePayeeUsername(wager) {
+            return wager.winner === "creator" ? wager.createdBy : wager.opponent;
+        }
+
+        function getVenmoHandle(username) {
+            // returns Promise<string|null>
+            return db.ref("usernames/" + username).once("value").then(s => {
+                const uid = s.val();
+                if (!uid) return null;
+                return db.ref("users/" + uid).once("value").then(u => {
+                    const data = u.val() || {};
+                    return (data.venmoUsername || "").trim() || null;
+                });
+            });
+        }
+
+        function buildVenmoLinks(handleOrUsername, amount, note) {
+            const recipient = encodeURIComponent(handleOrUsername.replace(/^@/, ""));
+            const amt = encodeURIComponent(amount);
+            const n = encodeURIComponent(note);
+            return {
+                app: `venmo://paycharge?txn=pay&recipients=${recipient}&amount=${amt}&note=${n}`,
+                web: `https://venmo.com/${recipient}?txn=pay&amount=${amt}&note=${n}`
+            };
+        }
+
+        function isMobileDevice() {
+            return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        }
+
+
         function loadLiveWagers() {
             const container = document.getElementById("wager-live-list");
             container.innerHTML = "";
@@ -812,62 +846,123 @@
                         const card = document.createElement("div");
                         card.className = "pending-wager-card";
                         card.innerHTML = `
-              <div class="wager-info">
-                <strong>From:</strong> ${wager.createdBy}<br>
-                <strong>Terms:</strong> ${wager.terms}<br>
-                <strong>Amount:</strong> $${wager.amount}<br>
-                <strong>Deadline:</strong> ${formatDeadline(wager.deadline)}<br>
-                <em>Status: ${wager.status}</em><br>
-                ${wager.winner ? `<strong>Winner:</strong> ${wager[wager.winner] || wager.winner}<br>` : ""}
-              </div>
-            `;
+                    <div class="wager-info">
+                        <strong>From:</strong> ${wager.createdBy}<br>
+                        <strong>Terms:</strong> ${wager.terms}<br>
+                        <strong>Amount:</strong> $${wager.amount}<br>
+                        <strong>Deadline:</strong> ${formatDeadline(wager.deadline)}<br>
+                        <em>Status: ${wager.status}</em><br>
+                        ${wager.winner ? `<strong>Winner:</strong> ${wager[wager.winner] || wager.winner}<br>` : ""}
+                    </div>
+                `;
 
+                        // ...after you create `card` and set innerHTML
                         const actionDiv = document.createElement("div");
                         actionDiv.className = "wager-actions";
+                        // Append NOW so async UI can appear later
+                        card.appendChild(actionDiv);
 
+                        // Winner selection UI (unchanged)
                         if (wager.status === "live" && deadlinePassed && !hasVoted) {
+                            const winnerWrapper = document.createElement("div");
+                            winnerWrapper.style.display = "flex";
+                            winnerWrapper.style.flexDirection = "column";
+                            winnerWrapper.style.alignItems = "center";
+                            winnerWrapper.style.marginTop = "1rem";
+
                             const prompt = document.createElement("strong");
-                            prompt.textContent = "Select Winner:";
-                            actionDiv.appendChild(prompt);
+                            prompt.textContent = "Select Winner";
+                            prompt.style.marginBottom = "0.5rem";
+                            winnerWrapper.appendChild(prompt);
+
+                            const buttonsRow = document.createElement("div");
+                            buttonsRow.style.display = "flex";
+                            buttonsRow.style.gap = "1rem";
+                            buttonsRow.style.justifyContent = "center";
 
                             const creatorBtn = document.createElement("button");
                             creatorBtn.textContent = `${wager.createdBy} Won`;
                             creatorBtn.style.background = "transparent";
+                            creatorBtn.style.padding = "0.5rem 1rem";
+                            creatorBtn.style.border = "2px solid var(--yellow)";
+                            creatorBtn.style.borderRadius = "6px";
+                            creatorBtn.style.color = "var(--yellow)";
+                            creatorBtn.style.fontWeight = "bold";
+                            creatorBtn.style.cursor = "pointer";
 
                             const opponentBtn = document.createElement("button");
                             opponentBtn.textContent = `${wager.opponent} Won`;
                             opponentBtn.style.background = "transparent";
+                            opponentBtn.style.padding = "0.5rem 1rem";
+                            opponentBtn.style.border = "2px solid var(--yellow)";
+                            opponentBtn.style.borderRadius = "6px";
+                            opponentBtn.style.color = "var(--yellow)";
+                            opponentBtn.style.fontWeight = "bold";
+                            opponentBtn.style.cursor = "pointer";
 
                             creatorBtn.onclick = () => {
                                 creatorBtn.style.background = "var(--yellow)";
                                 opponentBtn.disabled = true;
                                 creatorBtn.disabled = true;
-                                setTimeout(() => actionDiv.remove(), 1200);
+                                setTimeout(() => winnerWrapper.remove(), 1200);
                                 submitWinner("creator", id);
                             };
-
                             opponentBtn.onclick = () => {
                                 opponentBtn.style.background = "var(--yellow)";
                                 creatorBtn.disabled = true;
                                 opponentBtn.disabled = true;
-                                setTimeout(() => actionDiv.remove(), 1200);
+                                setTimeout(() => winnerWrapper.remove(), 1200);
                                 submitWinner("opponent", id);
                             };
 
-                            actionDiv.appendChild(document.createElement("br"));
-                            actionDiv.appendChild(creatorBtn);
-                            actionDiv.appendChild(opponentBtn);
+                            buttonsRow.appendChild(creatorBtn);
+                            buttonsRow.appendChild(opponentBtn);
+                            winnerWrapper.appendChild(buttonsRow);
+                            actionDiv.appendChild(winnerWrapper);
                         }
 
+                        // Payment/confirmation UI
                         if (needsPayment) {
-                            const payBtn = document.createElement("button");
-                            payBtn.textContent = "Mark as Paid";
-                            payBtn.onclick = () => markAsPaid(id);
-                            actionDiv.appendChild(payBtn);
-                        }
+                            // figure out if current user is winner or loser
+                            const current = window.currentUser.username;
+                            const winnerIsCreator = wager.winner === "creator";
+                            const isCurrentUserWinner =
+                                (winnerIsCreator && current === wager.createdBy) ||
+                                (!winnerIsCreator && current === wager.opponent);
+                            const isLoser = !isCurrentUserWinner;
 
-                        if (actionDiv.childNodes.length > 0) {
-                            card.appendChild(actionDiv);
+                            // Always show a Confirm button (both users must confirm)
+                            const confirmBtn = document.createElement("button");
+                            confirmBtn.textContent = isLoser ? "Mark as Paid" : "Confirm Received";
+                            confirmBtn.onclick = () => markAsPaid(id);
+                            actionDiv.appendChild(confirmBtn);
+
+                            // Only the loser gets the Venmo deep link
+                            if (isLoser) {
+                                const payeeUsername = winnerIsCreator ? wager.createdBy : wager.opponent;
+                                getVenmoHandle(payeeUsername).then(handle => {
+                                    const display = handle ? `@${handle}` : payeeUsername;
+                                    const note = `Betya wager: ${wager.terms.slice(0, 50)}${wager.terms.length > 50 ? "..." : ""}`;
+                                    const links = buildVenmoLinks(handle || payeeUsername, wager.amount, note);
+
+                                    const payLink = document.createElement("a");
+                                    payLink.href = isMobileDevice() ? links.app : links.web;
+                                    payLink.target = "_blank";
+                                    payLink.textContent = `Pay ${display} on Venmo`;
+                                    payLink.style.display = "inline-block";
+                                    payLink.style.padding = "0.5rem 1rem";
+                                    payLink.style.border = "2px solid var(--yellow)";
+                                    payLink.style.borderRadius = "6px";
+                                    payLink.style.color = "var(--yellow)";
+                                    payLink.style.fontWeight = "bold";
+                                    payLink.style.textDecoration = "none";
+                                    payLink.style.cursor = "pointer";
+                                    payLink.style.marginRight = "0.5rem";
+
+                                    // Insert Pay button before Confirm to read naturally
+                                    actionDiv.insertBefore(payLink, confirmBtn);
+                                });
+                            }
                         }
 
                         container.appendChild(card);
@@ -875,6 +970,7 @@
                 });
             });
         }
+
 
         function updateProfileButtonStatus() {
             const btn = document.getElementById("user-display");
@@ -924,16 +1020,27 @@
                     if (wager.status === "completed" && bothPaid && isUserInWager) {
                         const card = document.createElement("div");
                         card.className = "completed-wager-card";
+                        card.style.background = "rgba(255, 255, 255, 0.05)";
+                        card.style.backdropFilter = "blur(10px)";
+                        card.style.borderRadius = "1rem";
+                        card.style.padding = "1rem";
+                        card.style.marginBottom = "1rem";
+                        card.style.border = "1px solid rgba(255, 255, 255, 0.08)";
+                        card.style.boxShadow = "0 0 10px var(--yellow)";
+                        card.style.color = "white";
+                        card.style.fontSize = "0.95rem";
+
                         card.innerHTML = `
-              <div class="wager-info">
-                <strong>From:</strong> ${wager.createdBy}<br>
-                <strong>Terms:</strong> ${wager.terms}<br>
-                <strong>Amount:</strong> $${wager.amount}<br>
-                <strong>Deadline:</strong> ${formatDeadline(wager.deadline)}<br>
-                <strong>Winner:</strong> ${wager[wager.winner] || wager.winner}<br>
-                <em>Status: Settled</em>
-              </div>
-            `;
+                    <div class="wager-info">
+                        <strong>From:</strong> ${wager.createdBy}<br>
+                        <strong>Terms:</strong> ${wager.terms}<br>
+                        <strong>Amount:</strong> $${wager.amount}<br>
+                        <strong>Deadline:</strong> ${formatDeadline(wager.deadline)}<br>
+                        <strong>Winner:</strong> ${wager[wager.winner] || wager.winner}<br>
+                        <em>Status: Settled</em>
+                    </div>
+                `;
+
                         container.appendChild(card);
                     }
                 });
