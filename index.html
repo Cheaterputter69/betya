@@ -420,9 +420,14 @@
         .bottom-icon-bar img {
             width: 45px;
             height: 45px;
-            cursor: pointer;
-            animation: pulseGlow 2s infinite;
+            object-fit: contain;
+            /* keeps aspect ratio inside the box */
+            padding: 4px;
+            /* optional: adds uniform breathing room */
+            box-sizing: border-box;
+            /* ensures padding doesn’t push beyond 45x45 */
         }
+
 
         /* Icon Bottom Button Modals */
         #timeline-modal-overlay {
@@ -511,6 +516,11 @@
                 filter: drop-shadow(0 0 3px var(--yellow));
             }
         }
+
+        .bottom-icon-bar img {
+            animation: pulseGlow 2s infinite;
+        }
+
 
         /* === Timeline Card Enhancements === */
         .wager-card {
