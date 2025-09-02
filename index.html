@@ -108,11 +108,6 @@
             color: var(--yellow);
         }
 
-        .timeline-label {
-            color: var(--green);
-            margin-top: -1rem;
-        }
-
         .glass-card {
             width: 100%;
             background: var(--glass);
@@ -153,13 +148,6 @@
             box-shadow: 0 0 8px var(--yellow);
         }
 
-        .timeline-feed {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 1.25rem;
-        }
-
         .post {
             background: var(--glass);
             backdrop-filter: blur(10px);
@@ -192,6 +180,71 @@
             margin-top: 0.2rem;
             text-align: center;
         }
+
+        /* Wager Actions Layout */
+        .wager-actions {
+            display: flex;
+            gap: 0.75rem;
+            width: 100%;
+        }
+
+        .wager-actions #placeWagerBtn {
+            flex: 3;
+            /* 75% */
+        }
+
+        .wager-actions #privateToggleBtn {
+            flex: 1;
+            /* 25% */
+        }
+
+
+
+        /* Base button styling */
+        .btn {
+            height: 40px;
+            /* same for both */
+            border-radius: 999px;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            padding: 0 1.1rem;
+            border: 2px solid transparent;
+            cursor: pointer;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            transition: transform 120ms ease, box-shadow 160ms ease,
+                background-color 160ms ease, color 160ms ease, border-color 160ms ease;
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        /* PLACE WAGER (always filled) */
+        .btn--primary {
+            background: var(--yellow);
+            color: #000;
+            border-color: var(--yellow);
+            box-shadow: 0 0 18px rgba(219, 249, 58, 0.6);
+        }
+
+        /* PRIVATE (hollow by default) */
+        .btn--ghost {
+            background: transparent;
+            color: var(--yellow);
+            border-color: var(--yellow);
+            box-shadow: none;
+        }
+
+        /* PRIVATE when clicked/active */
+        .btn--ghost.is-active {
+            background: var(--yellow);
+            color: #000;
+            border-color: var(--yellow);
+            box-shadow: 0 0 18px rgba(219, 249, 58, 0.6), inset 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
 
         #profile-modal-overlay {
             display: flex;
@@ -319,12 +372,6 @@
             line-height: 1.5;
         }
 
-        .wager-actions {
-            display: flex;
-            justify-content: space-between;
-            gap: 0.5rem;
-        }
-
         .accept-btn,
         .decline-btn {
             flex: 1;
@@ -346,21 +393,637 @@
             color: white;
         }
 
+        .wager-actions button:hover {
+            background: var(--yellow);
+            color: #000;
+        }
+
+        /* Floating Bottom Icon Bar */
+        .bottom-icon-bar {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            width: 100%;
+            max-width: 500px;
+            padding: 0.5rem 1rem;
+            background: rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(10px);
+            border-radius: 2rem;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+            z-index: 999;
+        }
+
+        .bottom-icon-bar img {
+            width: 45px;
+            height: 45px;
+            cursor: pointer;
+            animation: pulseGlow 2s infinite;
+        }
+
+        /* Icon Bottom Button Modals */
+        #timeline-modal-overlay {
+            display: none;
+            /* ⬅️ hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+
+            /* flex centering (only when opened) */
+            align-items: center;
+            justify-content: center;
+        }
+
+
+        #timeline-modal-content {
+            background: rgba(20, 20, 20, 0.9);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 0 20px var(--yellow);
+            position: relative;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        #timeline-modal-content h2 {
+            text-align: center;
+            color: var(--yellow);
+            margin-bottom: 1rem;
+        }
+
+        .timeline-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--yellow);
+            cursor: pointer;
+        }
+
+        .timeline-card {
+            background: rgba(40, 40, 40, 0.6);
+            border: 1px solid var(--green);
+            border-radius: 0.8rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 0 8px var(--green);
+        }
+
+        .timeline-winner {
+            font-weight: bold;
+            color: var(--yellow);
+        }
+
+        .timeline-xp {
+            color: var(--green);
+            font-weight: bold;
+        }
+
+        .timeline-time {
+            font-size: 0.8rem;
+            color: #aaa;
+            margin-top: 0.3rem;
+        }
+
+        /* Pulse Glow Animation */
+        @keyframes pulseGlow {
+            0% {
+                filter: drop-shadow(0 0 3px var(--yellow));
+            }
+
+            50% {
+                filter: drop-shadow(0 0 12px var(--yellow));
+            }
+
+            100% {
+                filter: drop-shadow(0 0 3px var(--yellow));
+            }
+        }
+
+        /* === Timeline Card Enhancements === */
+        .wager-card {
+            background: rgba(40, 40, 40, 0.8);
+            border: 1px solid var(--green);
+            border-radius: 1rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 0 8px var(--green);
+        }
+
+        .wager-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
         .wager-actions button {
             background: transparent;
-            border: 2px solid var(--yellow);
-            padding: 6px 10px;
-            margin: 5px;
-            border-radius: 6px;
-            cursor: pointer;
+            border: 1px solid var(--yellow);
+            border-radius: 8px;
             color: var(--yellow);
             font-weight: bold;
-            transition: all 0.2s ease;
+            cursor: pointer;
+            padding: 4px 8px;
         }
 
         .wager-actions button:hover {
             background: var(--yellow);
             color: #000;
+        }
+
+        .comments-panel {
+            margin-top: 8px;
+            border-top: 1px dashed var(--yellow);
+            padding-top: 6px;
+        }
+
+        .comment {
+            font-size: 0.85rem;
+            margin: 4px 0;
+            color: #ddd;
+        }
+
+        /* Independent TIMELINE BetYa Now button */
+        .betya-now-btn {
+            background: var(--yellow);
+            color: #000;
+            border: 2px solid var(--yellow);
+            border-radius: 6px;
+            /* squarer corners so it looks different */
+            font-weight: 700;
+            font-size: 0.85rem;
+            padding: 0.35rem 0.9rem;
+            cursor: pointer;
+            margin-top: 0.6rem;
+            /* spacing from card content */
+            align-self: flex-start;
+            /* keep it small, not full width */
+            box-shadow: 0 0 8px rgba(219, 249, 58, 0.5);
+            transition: transform 120ms ease, box-shadow 160ms ease;
+        }
+
+        .betya-now-btn:hover {
+            box-shadow: 0 0 14px rgba(219, 249, 58, 0.8);
+            transform: scale(1.05);
+        }
+
+
+
+        /* === Leaderboard Modal === */
+        /* Overlay */
+        #leaderboard-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Modal */
+        #leaderboard-modal-content {
+            background: rgba(20, 20, 20, 0.95);
+            padding: 2rem;
+            border-radius: 1rem;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 0 20px #58dd53, 0 0 40px #dbf93a;
+            text-align: center;
+            position: relative;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        /* Title */
+        .leaderboard-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #dbf93a;
+            text-shadow: 0 0 10px #58dd53, 0 0 20px #dbf93a;
+            margin-bottom: 1rem;
+        }
+
+        /* Tabs */
+        .leaderboard-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .leaderboard-tabs .tab {
+            background: transparent;
+            border: 1px solid #58dd53;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            color: #fff;
+            text-shadow: 0 0 5px #58dd53;
+        }
+
+        .leaderboard-tabs .tab.active {
+            background: #111;
+            box-shadow: 0 0 10px #58dd53;
+        }
+
+        .leaderboard-tabs .tab.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* Leaderboard Rows */
+        .leaderboard-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #111;
+            margin: 8px 0;
+            padding: 10px 15px;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: bold;
+            text-shadow: 0 0 5px #58dd53;
+            box-shadow: 0 0 5px #58dd53, 0 0 10px #dbf93a;
+        }
+
+        .leaderboard-row .rank {
+            width: 30px;
+            text-align: left;
+        }
+
+        .leaderboard-row .username {
+            flex: 1;
+            text-align: left;
+        }
+
+        .leaderboard-row .xp {
+            text-align: right;
+            color: #dbf93a;
+        }
+
+        /* Special ranks */
+        .leaderboard-row.gold {
+            box-shadow: 0 0 15px gold, 0 0 30px gold;
+            color: gold;
+        }
+
+        .leaderboard-row.silver {
+            box-shadow: 0 0 15px silver, 0 0 30px silver;
+            color: silver;
+        }
+
+        .leaderboard-row.bronze {
+            box-shadow: 0 0 15px #cd7f32, 0 0 30px #cd7f32;
+            color: #cd7f32;
+        }
+
+        /* User Rank Footer */
+        #leaderboard-user-rank {
+            margin-top: 1rem;
+            padding: 10px;
+            background: #111;
+            border-radius: 8px;
+            color: #fff;
+            text-shadow: 0 0 5px #58dd53;
+            box-shadow: 0 0 5px #58dd53, 0 0 10px #dbf93a;
+            font-weight: bold;
+        }
+
+        .xp-icon {
+            width: 16px;
+            height: 16px;
+            vertical-align: middle;
+            margin-left: 4px;
+        }
+
+
+
+
+        /* === Suggestions Modal Styles === */
+
+        /* Overlay */
+        #suggestions-modal-overlay {
+            display: none;
+            /* hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Content Box */
+        #suggestions-modal-content {
+            background: rgba(20, 20, 20, 0.95);
+            padding: 2rem;
+            border-radius: 1rem;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 0 20px #dbf93a;
+            position: relative;
+            animation: fadeIn 0.3s ease-out;
+            text-align: center;
+        }
+
+        /* Title */
+        #suggestions-modal-content h2 {
+            color: #dbf93a;
+            margin-bottom: 1rem;
+        }
+
+        /* Paragraph */
+        #suggestions-modal-content p {
+            margin: 10px 0 20px;
+            font-size: 14px;
+            color: #fff;
+            text-align: center;
+        }
+
+        /* Neon Button (Submit via Email) */
+        #suggestions-modal-overlay .neon-btn {
+            margin: 5px;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            background: #000;
+            /* black base for neon pop */
+            color: #fff;
+            font-weight: bold;
+            text-shadow: 0 0 5px #58dd53, 0 0 10px #58dd53, 0 0 20px #dbf93a;
+            box-shadow: 0 0 5px #58dd53, 0 0 15px #dbf93a;
+            transition: all 0.2s ease;
+        }
+
+        #suggestions-modal-overlay .neon-btn:hover {
+            transform: scale(1.05);
+            text-shadow: 0 0 10px #58dd53, 0 0 20px #dbf93a, 0 0 30px #dbf93a;
+            box-shadow: 0 0 10px #58dd53, 0 0 25px #dbf93a;
+            background: #111;
+            /* subtle hover contrast */
+        }
+
+        /* Secondary Close Button */
+        #suggestions-modal-overlay .close-secondary-btn {
+            margin-top: 10px;
+            background: #222;
+            color: #aaa;
+            padding: 8px 14px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        #suggestions-modal-overlay .close-secondary-btn:hover {
+            background: #333;
+            color: #fff;
+        }
+
+        /* Top-right X close */
+        #suggestions-modal-overlay .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 28px;
+            font-weight: bold;
+            color: #dbf93a;
+            cursor: pointer;
+            text-shadow: 0 0 5px #58dd53, 0 0 15px #dbf93a;
+        }
+
+        #suggestions-modal-overlay .close-btn:hover {
+            color: #58dd53;
+            text-shadow: 0 0 10px #dbf93a, 0 0 20px #58dd53;
+        }
+
+
+
+
+        /* Overlay backdrop */
+        #help-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            /* dark overlay */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+        }
+
+        /* Modal content */
+        #help-modal-content {
+            background: #111;
+            border: 2px solid var(--yellow);
+            border-radius: 15px;
+            width: 90%;
+            max-width: 450px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 20px;
+            color: var(--green);
+            position: relative;
+            box-shadow: 0 0 25px var(--yellow);
+        }
+
+        #help-modal-content h2 {
+            text-align: center;
+            color: var(--yellow);
+        }
+
+        #help-modal-content h3 {
+            color: var(--yellow);
+            margin-top: 1.2rem;
+        }
+
+        #help-modal-content ul {
+            padding-left: 1.2rem;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            cursor: pointer;
+            font-size: 2rem;
+            color: var(--yellow);
+        }
+
+        .contact-btn {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background: var(--yellow);
+            color: #000;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .faq-item {
+            border: 1px solid var(--yellow);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            background: #111;
+            box-shadow: 0 0 10px rgba(255, 255, 0, 0.3);
+        }
+
+        .faq-question {
+            width: 100%;
+            text-align: left;
+            padding: 15px;
+            background: none;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            color: var(--yellow);
+            font-size: 1rem;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .faq-question span {
+            font-size: 1.5rem;
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+            padding: 0 15px;
+            color: var(--green);
+        }
+
+        .faq-answer.open {
+            max-height: 200px;
+            /* adjust if answers are longer */
+            padding: 15px;
+        }
+
+        /* Accordion FAQ */
+        .faq-item {
+            border: 1px solid var(--yellow);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            background: #111;
+            box-shadow: 0 0 10px rgba(255, 255, 0, 0.3);
+        }
+
+        .faq-question {
+            width: 100%;
+            text-align: left;
+            padding: 15px;
+            background: none;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            color: var(--yellow);
+            font-size: 1rem;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .faq-question span {
+            font-size: 1.5rem;
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+            padding: 0 15px;
+            color: var(--green);
+        }
+
+        .faq-answer.open {
+            max-height: 200px;
+            /* adjust as needed */
+            padding: 15px;
+        }
+
+
+        /* This is the TOAST for XP Rewards */
+
+        #xp-toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 9999;
+        }
+
+        .xp-toast {
+            background: rgba(0, 0, 0, 0.85);
+            color: var(--yellow, #ffd700);
+            font-weight: bold;
+            padding: 10px 16px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+            animation: slideIn 0.3s ease, fadeOut 0.5s ease 2.5s forwards;
+        }
+
+        .xp-toast img {
+            width: 28px;
+            height: 28px;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(120%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOut {
+            to {
+                transform: translateX(120%);
+                opacity: 0;
+            }
         }
 
 
@@ -403,25 +1066,48 @@
                 font-size: 0.75rem;
                 text-align: left;
             }
+
+            .bottom-icon-bar {
+                position: static;
+                /* removes fixed position */
+                transform: none;
+                margin-top: 1rem;
+                /* space above icons */
+                background: transparent;
+                box-shadow: none;
+            }
+
+            /* Help Modal mobile overrides */
+            #help-modal-content {
+                width: 95%;
+                max-width: 95%;
+                max-height: 85vh;
+                padding: 15px;
+                font-size: 0.9rem;
+            }
+
+            .faq-question {
+                padding: 12px;
+                font-size: 0.9rem;
+            }
+
+            .faq-answer.open {
+                max-height: 300px;
+            }
+
+            .contact-btn {
+                width: 100%;
+                font-size: 0.9rem;
+            }
         }
     </style>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyCf730VWvXKqmpYtF5RddI2GAnCd0jLTcU",
-            authDomain: "betya-a767f.firebaseapp.com",
-            databaseURL: "https://betya-a767f-default-rtdb.firebaseio.com",
-            projectId: "betya-a767f",
-            storageBucket: "betya-a767f.firebasestorage.app",
-            messagingSenderId: "944512270849",
-            appId: "1:944512270849:web:6dcea5b5c91fe56f66b600"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.database();
-    </script>
+
+    <!-- Firebase v8 SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+
 </head>
 
 <body>
@@ -451,9 +1137,12 @@
             <textarea placeholder="Wager Terms (4–5 lines)" id="wager-terms"></textarea>
             <input type="number" placeholder="Amount" id="wager-amount" />
             <input type="datetime-local" id="wager-datetime" />
-            <button class="place-btn" onclick="placeWager()">PLACE WAGER</button>
-        </div>
-
+            <div class="wager-actions">
+                <button id="placeWagerBtn" class="btn btn--primary" type="button">PLACE WAGER</button>
+                <button id="privateToggleBtn" class="btn btn--ghost" type="button">PRIVATE</button>
+            </div>
+            <input type="hidden" id="visibilityField" value="public">
+        </div> <!-- ✅ close this -->
 
     </main>
 
@@ -483,6 +1172,10 @@
 
             <h2 class="profile-section">My Profile</h2>
 
+            <div id="xp-display" style="text-align:center; font-size:1.2rem; font-weight:bold; color:var(--green);">
+                XP Tokens: 0 🪙
+            </div>
+
             <button class="profile-btn">Deposit</button>
 
             <div style="text-align: center; color: var(--green); font-weight: bold; font-size: 1.5rem; margin: 10px 0;">
@@ -502,23 +1195,318 @@
                 <div id="wager-completed-list">(None yet)</div>
             </div>
 
-            <button class="logout-btn">Logout</button>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+
+        </div>
+    </div>
+
+    <!-- Bottom Floating Icons -->
+    <div class="bottom-icon-bar">
+        <img src="timeline.png" alt="Timeline" title="Timeline" onclick="openTimelineModal()">
+        <!-- <img src="friends.png" alt="Friends" title="Friends" onclick="openFriendsModal()"> -->
+        <img src="leaderboard.png" alt="Leaderboard" title="Leaderboard" onclick="openLeaderboardModal()">
+        <img src="suggestions.png" alt="Suggestions" title="Suggestions" onclick="openSuggestionsModal()">
+        <img src="help.png" alt="Help" id="helpBtn" class="bottom-icon" />
+    </div>
+
+
+    <!-- Timeline Modal Overlay Bottom Button-->
+    <div id="timeline-modal-overlay">
+        <div id="timeline-modal-content">
+            <!-- Close button -->
+            <div onclick="closeTimelineModal()" class="timeline-close">&times;</div>
+
+            <!-- Heading -->
+            <h2>Timeline</h2>
+
+            <!-- Feed container (matches initTimeline) -->
+            <div id="timeline-feed"></div>
         </div>
     </div>
 
 
-    <!-- Wager Info For Firebase 
-    <div class="glass-card">
-        <input type="text" placeholder="Opponent" id="wager-opponent" />
-        <textarea placeholder="Wager Terms (4–5 lines)" id="wager-terms"></textarea>
-        <input type="number" placeholder="Amount" id="wager-amount" />
-        <input type="date" id="wager-date" />
-        <button class="place-btn" onclick="placeWager()">PLACE WAGER</button>
+
+    <!-- Leaderboard Modal -->
+    <div id="leaderboard-modal-overlay" style="display:none;">
+        <div id="leaderboard-modal-content">
+            <span class="close-btn" onclick="closeLeaderboardModal()">&times;</span>
+            <h2 class="leaderboard-title">LEADERBOARD</h2>
+
+            <!-- Tabs (Friends disabled for now) -->
+            <div class="leaderboard-tabs">
+                <button class="tab active">Overall</button>
+                <button class="tab disabled">Friends (Coming Soon)</button>
+            </div>
+
+            <!-- Leaderboard list -->
+            <div id="leaderboard-list"></div>
+
+            <!-- Current user rank -->
+            <div id="leaderboard-user-rank"></div>
+        </div>
     </div>
-    -->
 
 
+
+    <!-- Suggestions Modal -->
+    <div id="suggestions-modal-overlay" style="display:none;">
+        <div id="suggestions-modal-content">
+            <span class="close-btn" onclick="closeSuggestionsModal()">&times;</span>
+            <h2>Suggestions</h2>
+            <p>Please submit your suggestions in the proper fields below. Tap the button to send us your feedback.</p>
+
+            <a href="mailto:youraddress@email.com?subject=Betya%20Suggestion&body=Hi%20Betya%20Team,%0D%0A%0D%0AMy%20suggestion%20is:%20"
+                target="_blank">
+                <button class="neon-btn">Submit via Email</button>
+            </a>
+
+            <button class="close-secondary-btn" onclick="closeSuggestionsModal()">Close</button>
+        </div>
+    </div>
+
+
+
+
+    <!-- Help Modal Overlay -->
+    <div id="help-modal-overlay" style="display: none;">
+        <div id="help-modal-content">
+            <!-- Close Button -->
+            <div class="close-btn" onclick="closeHelpModal()">&times;</div>
+
+            <!-- Header -->
+            <h2>Help & Support</h2>
+
+            <!-- How To Section -->
+            <h3>How to Use</h3>
+            <ul>
+                <li>Create a profile and add your Venmo handle.</li>
+                <li>Place or accept wagers with friends.</li>
+                <li>Track results in the Timeline.</li>
+                <li>Winners confirm and get paid via Venmo links.</li>
+            </ul>
+
+            <!-- FAQ Section -->
+            <h3>FAQ</h3>
+
+            <div class="faq-item">
+                <button class="faq-question">What is Betya?<span>+</span></button>
+                <div class="faq-answer">
+                    Betya is a peer-to-peer wager reminder app. You and your friends agree on wager terms, use Betya to
+                    track it, and settle payments directly via Venmo. Betya adds the fun: tracking, XP rewards, and
+                    leaderboards.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">Is Betya gambling?<span>+</span></button>
+                <div class="faq-answer">
+                    No. Betya does not act as a casino or bookie. We don’t hold or manage money — we simply provide a
+                    reminder and record-keeping service for skill-based wagers between friends.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">How do I create a wager?<span>+</span></button>
+                <div class="faq-answer">
+                    Tap <em>Create Wager</em> in the app, enter opponent, terms, and wager amount, then confirm. Both
+                    users get reminders, and results are tracked in Betya.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">What happens after a wager is created?<span>+</span></button>
+                <div class="faq-answer">
+                    Both players see the wager appear. Once the result is decided, the winner is confirmed in Betya, and
+                    players settle payment through Venmo or their agreed method.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">How do I earn XP rewards?<span>+</span></button>
+                <div class="faq-answer">
+                    You can earn XP for:
+                    <ul>
+                        <li>First wager bonus</li>
+                        <li>Creating a wager</li>
+                        <li>Accepting a wager</li>
+                        <li>Winning a wager</li>
+                        <li>Referring a new user</li>
+                        <li>Calling out an opponent</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">What is the leaderboard?<span>+</span></button>
+                <div class="faq-answer">
+                    The leaderboard ranks users by XP. Top users are highlighted, with gold/silver/bronze glow for the
+                    top three. It’s all about bragging rights and friendly competition.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">What can XP be used for?<span>+</span></button>
+                <div class="faq-answer">
+                    XP currently boosts your leaderboard ranking. In future versions, XP may unlock achievements,
+                    badges, or special rewards, but it is <strong>not redeemable for cash</strong>.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">How do I send suggestions or feedback?<span>+</span></button>
+                <div class="faq-answer">
+                    Tap the <em>Suggestions</em> icon in the bottom menu. You’ll be able to quickly email the Betya team
+                    with your thoughts.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">What if there’s a dispute?<span>+</span></button>
+                <div class="faq-answer">
+                    Betya does not arbitrate disputes. Since we don’t hold money, players are responsible for settling
+                    fairly. Use Betya as a transparent record to keep things honest.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question">Where can I find legal policies?<span>+</span></button>
+                <div class="faq-answer">
+                    Terms of Service, Privacy Policy, and Disclaimer links are available inside the Help modal. Please
+                    review them before playing.
+                </div>
+            </div>
+
+            <!-- Contact -->
+            <h3>Need More Help?</h3>
+            <a href="mailto:contact.betya.us@gmail.com" class="contact-btn">Contact Support</a>
+        </div>
+    </div>
+
+
+
+
+
+    <!-- XP Toast Container -->
+    <div id="xp-toast-container"></div>
+
+
+
+    <!-- Start of Functions -->
+
+    <!-- Your Firebase + wager logic -->
     <script>
+        // Grab elements safely
+        const placeWagerBtn = document.getElementById("placeWagerBtn");
+        const visibilityField = document.getElementById("visibilityField");
+        const privateToggleBtn = document.getElementById("privateToggleBtn");
+
+        privateToggleBtn.addEventListener("click", () => {
+            if (visibilityField.value === "public") {
+                // Switch to private
+                visibilityField.value = "private";
+                privateToggleBtn.classList.add("is-active");
+            } else {
+                // Switch back to public
+                visibilityField.value = "public";
+                privateToggleBtn.classList.remove("is-active");
+            }
+        });
+
+
+        // Unified Wager Submit Logic
+        placeWagerBtn.addEventListener("click", () => {
+            const opponent = document.getElementById("wager-opponent").value.trim();
+            const terms = document.getElementById("wager-terms").value.trim();
+            const amount = parseFloat(document.getElementById("wager-amount").value);
+            const deadline = document.getElementById("wager-datetime").value;
+            const visibility = visibilityField.value;
+
+            if (!opponent || !terms || isNaN(amount) || !deadline) {
+                alert("Please fill out all wager fields.");
+                return;
+            }
+
+            if (!window.currentUser || !window.currentUser.username) {
+                alert("You must be logged in to place a wager.");
+                return;
+            }
+
+            const wagerData = {
+                createdBy: window.currentUser.username,
+                opponent,
+                terms,
+                amount,
+                deadline,
+                visibility,
+                status: "pending",
+                createdAt: Date.now(),
+            };
+
+            db.ref("wagers").push(wagerData)
+                .then(() => {
+                    console.log("✅ Wager saved:", wagerData);
+                    alert("Wager submitted!");
+
+                    const uid = window.currentUser.uid;
+
+                    if (uid) {
+                        // Step 1: Always award +10 for placing wager
+                        awardXP(uid, 10, "Placed Wager")
+                            .then(() => db.ref("users/" + uid).once("value"))
+                            .then(userSnap => {
+                                const userData = userSnap.val() || {};
+
+                                // === First Wager Bonus ===
+                                const totalWagers = (userData.totalWagers || 0) + 1;
+                                db.ref("users/" + uid).update({ totalWagers });
+
+                                if (totalWagers === 1) {
+                                    return awardXP(uid, 20, "First Wager");
+                                }
+                            })
+                            .then(() => {
+                                // === First Challenge Bonus ===
+                                if (opponent) {
+                                    return db.ref("users/" + uid).once("value").then(userSnap => {
+                                        const userData = userSnap.val() || {};
+                                        const challengesSent = (userData.challengesSent || 0) + 1;
+                                        db.ref("users/" + uid).update({ challengesSent });
+
+                                        if (challengesSent === 1) {
+                                            return awardXP(uid, 15, "First Challenge");
+                                        }
+                                    });
+                                }
+                            })
+                            .then(() => {
+                                // Step 2: Opponent Callout Bonus
+                                return db.ref("usernames/" + opponent).once("value").then(oppSnap => {
+                                    if (oppSnap.exists()) {
+                                        const opponentUid = oppSnap.val();
+                                        return awardXP(opponentUid, 10, "Called Out");
+                                    }
+                                });
+                            })
+                            .catch(err => {
+                                console.error("❌ XP chain failed:", err);
+                            });
+                    }
+
+                    // Clear form inputs
+                    document.getElementById("wager-opponent").value = "";
+                    document.getElementById("wager-terms").value = "";
+                    document.getElementById("wager-amount").value = "";
+                    document.getElementById("wager-datetime").value = "";
+                    visibilityField.value = "public";
+                    privateToggleBtn.classList.remove("is-active");
+                })
+                .catch(error => {
+                    console.error("❌ Error saving wager:", error);
+                    alert("Failed to submit wager. Please try again.");
+                });
+        });
+
+
         const modalOverlay = document.getElementById('modal-overlay');
         const modalTitle = document.getElementById('modal-title');
         const modalFields = document.getElementById('modal-form-fields');
@@ -527,18 +1515,25 @@
             if (mode === 'create') {
                 modalTitle.textContent = 'Create Profile';
                 modalFields.innerHTML = `
-            <input type="text" placeholder="Username" style="width: 100%; padding: 0.75rem; margin-bottom: 0.75rem; border-radius: 0.5rem; background: rgba(255,255,255,0.1); border: none; color: white;">
-            <input type="password" placeholder="Username Password" style="width: 100%; padding: 0.75rem; margin-bottom: 0.75rem; border-radius: 0.5rem; background: rgba(255,255,255,0.1); border: none; color: white;">
-            <input type="email" placeholder="Email" style="width: 100%; padding: 0.75rem; margin-bottom: 0.75rem; border-radius: 0.5rem; background: rgba(255,255,255,0.1); border: none; color: white;">
-            <input type="text" placeholder="Venmo Username" style="width: 100%; padding: 0.75rem; margin-bottom: 0.75rem; border-radius: 0.5rem; background: rgba(255,255,255,0.1); border: none; color: white;">
-            <input type="text" placeholder="Referral Code" style="width: 100%; padding: 0.75rem; margin-bottom: 0.75rem; border-radius: 0.5rem; background: rgba(255,255,255,0.1); border: none; color: white;">
-        `;
+    <input type="text" placeholder="Username"
+        style="width: 100%; padding: 0.75rem; margin-bottom: 0.75rem; border-radius: 0.5rem; background: rgba(255,255,255,0.1); border: none; color: white;">
+    <input type="password" placeholder="Username Password"
+        style="width: 100%; padding: 0.75rem; margin-bottom: 0.75rem; border-radius: 0.5rem; background: rgba(255,255,255,0.1); border: none; color: white;">
+    <input type="email" placeholder="Email"
+        style="width: 100%; padding: 0.75rem; margin-bottom: 0.75rem; border-radius: 0.5rem; background: rgba(255,255,255,0.1); border: none; color: white;">
+    <input type="text" placeholder="Venmo Username"
+        style="width: 100%; padding: 0.75rem; margin-bottom: 0.75rem; border-radius: 0.5rem; background: rgba(255,255,255,0.1); border: none; color: white;">
+    <input type="text" placeholder="Referral Code"
+        style="width: 100%; padding: 0.75rem; margin-bottom: 0.75rem; border-radius: 0.5rem; background: rgba(255,255,255,0.1); border: none; color: white;">
+    `;
             } else {
                 modalTitle.textContent = 'Login';
                 modalFields.innerHTML = `
-            <input type="text" placeholder="Username" style="width: 100%; padding: 0.75rem; margin-bottom: 0.75rem; border-radius: 0.5rem; background: rgba(255,255,255,0.1); border: none; color: white;">
-            <input type="password" placeholder="Password" style="width: 100%; padding: 0.75rem; margin-bottom: 0.75rem; border-radius: 0.5rem; background: rgba(255,255,255,0.1); border: none; color: white;">
-        `;
+    <input type="text" placeholder="Username"
+        style="width: 100%; padding: 0.75rem; margin-bottom: 0.75rem; border-radius: 0.5rem; background: rgba(255,255,255,0.1); border: none; color: white;">
+    <input type="password" placeholder="Password"
+        style="width: 100%; padding: 0.75rem; margin-bottom: 0.75rem; border-radius: 0.5rem; background: rgba(255,255,255,0.1); border: none; color: white;">
+    `;
             }
             modalOverlay.style.display = 'flex';
         }
@@ -565,10 +1560,70 @@
                 }
 
                 const uid = db.ref().push().key;
-                db.ref('users/' + uid).set({ username, password, email, venmoUsername, referralCode })
+
+                // Save new user
+                db.ref('users/' + uid).set({
+                    username,
+                    password,
+                    email,
+                    venmoUsername,
+                    referralCode,
+                    xp_balance: 0,
+                    promo_wallet: 0.0
+                })
                     .then(() => db.ref('usernames/' + username).set(uid))
                     .then(() => {
-                        window.currentUser = { uid, username, email, venmoUsername, referralCode };
+                        awardXP(uid, 50, "Account Created");
+
+                        // ✅ Referral logic (unchanged from your code)
+                        if (referralCode && referralCode !== username) {
+                            db.ref("users/" + uid + "/referralUsed").once("value").then(flagSnap => {
+                                if (!flagSnap.exists()) {
+                                    db.ref("usernames/" + referralCode).once("value").then(refSnap => {
+                                        if (refSnap.exists()) {
+                                            const referrerUid = refSnap.val();
+                                            if (referrerUid === window.currentUser?.uid) {
+                                                awardXP(referrerUid, 100, "Referral Bonus");
+                                            } else {
+                                                db.ref("users/" + referrerUid).once("value").then(snap => {
+                                                    const data = snap.val() || {};
+                                                    const newXP = (data.xp_balance || 0) + 100;
+                                                    const newPromo = Number(((data.promo_wallet || 0) + 100 * 0.01).toFixed(2));
+
+                                                    db.ref("users/" + referrerUid).update({
+                                                        xp_balance: newXP,
+                                                        promo_wallet: newPromo,
+                                                        lastXpAt: Date.now()
+                                                    });
+
+                                                    db.ref("users/" + referrerUid + "/xp_log").push({
+                                                        amount: 100,
+                                                        reason: "Referral Bonus",
+                                                        at: Date.now()
+                                                    });
+
+                                                    console.log("✅ Referral bonus awarded to:", referralCode);
+                                                });
+                                            }
+                                            db.ref("users/" + uid).update({ referralUsed: true });
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    })
+                    .then(() => {
+                        // ✅ Save session locally
+                        saveUserSession({
+                            uid: uid,
+                            username: username,
+                            email: email,
+                            venmoUsername: venmoUsername,
+                            referralCode: referralCode,
+                            xp_balance: 0
+                        });
+
+                        // UI update
                         document.querySelector('.welcome').textContent = `Welcome, ${username}`;
                         document.getElementById('auth-buttons').style.display = 'none';
                         document.getElementById('user-info').style.display = 'block';
@@ -597,13 +1652,32 @@
                                 throw new Error("Incorrect password.");
                             }
 
-                            window.currentUser = { uid, username: userData.username, email: userData.email, venmoUsername: userData.venmoUsername, referralCode: userData.referralCode };
+                            // ✅ Save session locally
+                            saveUserSession({
+                                uid: uid,
+                                username: userData.username,
+                                email: userData.email,
+                                venmoUsername: userData.venmoUsername,
+                                referralCode: userData.referralCode,
+                                xp_balance: userData.xp_balance || 0
+                            });
+
+                            // UI update
                             document.querySelector('.welcome').textContent = `Welcome, ${userData.username}`;
                             document.getElementById('auth-buttons').style.display = 'none';
                             document.getElementById('user-info').style.display = 'block';
                             document.getElementById('user-display').textContent = userData.username;
                             updateProfileButtonStatus();
                             closeModal();
+
+                            // Daily login XP
+                            const today = new Date().toISOString().split('T')[0];
+                            const lastLogin = userData?.lastLoginDate;
+                            if (lastLogin !== today) {
+                                awardXP(uid, 5);
+                                db.ref("users/" + uid).update({ lastLoginDate: today });
+                                console.log("✅ Awarded 5 XP for daily login");
+                            }
                         });
                     })
                     .catch(error => alert(error.message));
@@ -614,8 +1688,21 @@
         function openProfileModal() {
             loadPendingWagers();
             loadLiveWagers();
+
+            // 🪙 Pull XP from Firebase and update display
+            if (window.currentUser && window.currentUser.uid) {
+                db.ref("users/" + window.currentUser.uid).once("value").then(snap => {
+                    const user = snap.val();
+                    if (user && user.xp_balance !== undefined) {
+                        document.getElementById("xp-display").textContent =
+                            `XP Tokens: ${user.xp_balance} 🪙`;
+                    }
+                });
+            }
+
             document.getElementById('profile-modal-overlay').style.display = 'flex';
         }
+
 
         function closeProfileModal() {
             document.getElementById('profile-modal-overlay').style.display = 'none';
@@ -647,8 +1734,6 @@
         }
 
     </script>
-
-    <!-- Placing the Wager  -->
     <script>
 
         function formatDeadline(timestamp) {
@@ -660,44 +1745,6 @@
                 day: 'numeric',
                 hour: 'numeric',
                 minute: '2-digit',
-            });
-        }
-
-
-        function placeWager() {
-            const opponent = document.getElementById("wager-opponent").value.trim();
-            const terms = document.getElementById("wager-terms").value.trim();
-            const amount = parseFloat(document.getElementById("wager-amount").value);
-            const datetime = document.getElementById("wager-datetime").value;
-
-            if (!opponent || !terms || isNaN(amount) || !datetime) {
-                alert("Please fill out all wager fields.");
-                return;
-            }
-
-            if (!window.currentUser || !window.currentUser.uid) {
-                alert("You must be logged in to place a wager.");
-                return;
-            }
-
-            const wagerData = {
-                createdBy: window.currentUser.username,
-                opponent,
-                terms,
-                amount,
-                deadline: datetime,
-                status: "pending",
-                createdAt: new Date().toISOString()
-            };
-
-            const wagerId = db.ref().child("wagers").push().key;
-
-            db.ref(`wagers/${wagerId}`).set(wagerData).then(() => {
-                alert("Wager placed successfully!");
-                document.getElementById("wager-opponent").value = "";
-                document.getElementById("wager-terms").value = "";
-                document.getElementById("wager-amount").value = "";
-                document.getElementById("wager-datetime").value = "";
             });
         }
 
@@ -714,11 +1761,61 @@
                     alert(`Wager ${isAccepted ? "confirmed" : "declined"}.`);
                     loadPendingWagers(); // Refresh pending list after action
                     loadLiveWagers();    // Refresh live list to show newly accepted wager
+
+                    // 🪙 Award XP only if wager was accepted
+                    if (isAccepted && window.currentUser && window.currentUser.uid) {
+                        awardXP(window.currentUser.uid, 10); // +10 XP for accepting a wager
+                        console.log("✅ XP awarded for accepting wager");
+                    }
                 })
                 .catch(error => {
                     alert("Error updating wager: " + error.message);
                 });
         }
+
+
+        // Replace your current awardXP with this version
+        function awardXP(uid, amount, reason = "XP Earned") {
+            const userRef = db.ref("users/" + uid);
+
+            return userRef.transaction(userData => {
+                if (!userData) return userData;
+
+                // Calculate new balances
+                const newXP = (userData.xp_balance || 0) + amount;
+                const newPromo = (userData.promo_wallet || 0) + amount * 0.01;
+
+                // Update user object
+                userData.xp_balance = newXP;
+                userData.promo_wallet = parseFloat(newPromo.toFixed(2));
+                userData.lastXpAt = Date.now();
+
+                // Log the XP event
+                if (!userData.xp_log) userData.xp_log = {};
+                const logId = db.ref().push().key;
+                userData.xp_log[logId] = {
+                    amount,
+                    reason,
+                    at: Date.now()
+                };
+
+                return userData;
+            }).then(() => {
+                // ✅ Success
+                console.log(`✅ Awarded ${amount} XP to ${uid} (${reason})`);
+
+                // 🔒 Only show toast if this XP belongs to the logged-in user
+                if (uid === window.currentUser?.uid) {
+                    showXpToast(amount, reason);
+                }
+
+                return true;
+            }).catch(err => {
+                console.error("❌ awardXP failed:", err);
+                throw err;
+            });
+        }
+
 
         function loadPendingWagers() {
             const container = document.getElementById("wager-live-list");
@@ -754,46 +1851,106 @@
             });
         }
 
-        function submitWinner(choice, wagerId) {
-            const currentUser = window.currentUser.username;
-            db.ref(`wagers/${wagerId}/resolution/${currentUser}`).set(choice).then(() => {
-                db.ref(`wagers/${wagerId}`).once("value").then(snapshot => {
-                    const wager = snapshot.val();
-                    const res = wager.resolution || {};
+        function submitWinner(wagerId, voterRole, vote) {
+            const wagerRef = db.ref("wagers/" + wagerId);
 
-                    const createdVote = res[wager.createdBy];
-                    const opponentVote = res[wager.opponent];
+            if (!wagerId || !voterRole || !vote) {
+                console.error("❌ Missing required parameters:", { wagerId, voterRole, vote });
+                return;
+            }
 
-                    if (createdVote && opponentVote && wager.status === "live") {
-                        if (createdVote === opponentVote) {
-                            db.ref(`wagers/${wagerId}`).update({
-                                status: "completed",
-                                winner: createdVote
-                            });
-                        } else {
-                            db.ref(`wagers/${wagerId}`).update({
-                                status: "disputed"
-                            });
+            // Step 1: Save this player's vote
+            const voteField = voterRole === "creator" ? "creatorVote" : "opponentVote";
+            wagerRef.update({ [voteField]: vote })
+                .then(() => {
+                    console.log(`✅ ${voterRole} voted: ${vote}`);
+
+                    // Step 2: Check both votes
+                    wagerRef.once("value").then(snap => {
+                        const wager = snap.val();
+                        if (!wager) return;
+
+                        const { creatorVote, opponentVote } = wager;
+
+                        // Only resolve if both voted
+                        if (creatorVote && opponentVote) {
+                            if (creatorVote === opponentVote) {
+                                // Both agree → resolve wager
+                                const winnerKey = creatorVote === "creator" ? "createdBy" : "opponent";
+                                const winnerUsername = wager[winnerKey];
+
+                                console.log("🏆 Both agree, winner is:", winnerUsername);
+
+                                // Award XP
+                                db.ref("usernames/" + winnerUsername).once("value").then(uidSnap => {
+                                    if (uidSnap.exists()) {
+                                        const winnerUid = uidSnap.val();
+                                        awardXP(winnerUid, 25); // 🪙 +25 XP
+                                        console.log(`✅ Awarded 25 XP to ${winnerUsername}`);
+                                    }
+                                });
+
+                                wagerRef.update({
+                                    status: "live", // keep it live until payments
+                                    resolvedWinner: winnerUsername
+
+
+                                }).then(() => {
+                                    alert(`Wager resolved. Winner: ${winnerUsername}`);
+                                    loadLiveWagers();
+                                });
+                            } else {
+                                // Both voted, but disagreed
+                                wagerRef.update({
+                                    status: "unresolved"
+                                }).then(() => {
+                                    alert("❌ Votes do not match. Wager unresolved.");
+                                    loadLiveWagers();
+                                });
+                            }
                         }
-                    }
+                    });
+                })
+                .catch(error => console.error("❌ Error saving vote:", error));
+        }
 
-                    alert("Winner submitted.");
-                    setTimeout(() => {
+
+
+        function markAsPaid(wagerId) {
+            const wagerRef = db.ref("wagers/" + wagerId);
+
+            wagerRef.once("value").then(snap => {
+                const wager = snap.val();
+                if (!wager) return;
+
+                const currentUser = window.currentUser.username;
+                const paidBy = wager.paidBy || {};
+
+                // Mark this user as paid/confirmed
+                paidBy[currentUser] = true;
+
+                wagerRef.update({ paidBy }).then(() => {
+                    console.log(`💰 ${currentUser} confirmed payment on wager ${wagerId}`);
+
+                    // If both confirmed → flip to completed
+                    if (paidBy[wager.createdBy] && paidBy[wager.opponent]) {
+                        wagerRef.update({
+                            status: "completed",
+                            fullyPaid: true,
+                            completedAt: Date.now()
+                        }).then(() => {
+                            console.log(`✅ Wager ${wagerId} marked as COMPLETED`);
+                            loadCompletedWagers(); // refresh completed list
+                            loadLiveWagers();      // refresh live list to hide it
+                        });
+                    } else {
+                        // Still waiting for the other user
                         loadLiveWagers();
-                        updateProfileButtonStatus();
-                    }, 1000);
+                    }
                 });
             });
         }
 
-        function markAsPaid(wagerId) {
-            const currentUser = window.currentUser.username;
-            db.ref(`wagers/${wagerId}/paidBy/${currentUser}`).set(true).then(() => {
-                alert("Marked as paid.");
-                loadLiveWagers();
-                updateProfileButtonStatus();
-            });
-        }
 
         function determinePayeeUsername(wager) {
             return wager.winner === "creator" ? wager.createdBy : wager.opponent;
@@ -837,136 +1994,106 @@
                     const wager = child.val();
                     const id = child.key;
 
-                    const isUserInWager = wager.opponent === window.currentUser.username || wager.createdBy === window.currentUser.username;
-                    const deadlinePassed = Date.now() > new Date(wager.deadline);
-                    const hasVoted = wager.resolution && wager.resolution[window.currentUser.username];
-                    const needsPayment = wager.status === "completed" && (!wager.paidBy || !wager.paidBy[window.currentUser.username]);
+                    const isUserInWager =
+                        wager.opponent === window.currentUser.username ||
+                        wager.createdBy === window.currentUser.username;
 
-                    if ((wager.status === "live" || (wager.status === "completed" && needsPayment)) && isUserInWager) {
-                        const card = document.createElement("div");
-                        card.className = "pending-wager-card";
-                        card.innerHTML = `
-                    <div class="wager-info">
-                        <strong>From:</strong> ${wager.createdBy}<br>
-                        <strong>Terms:</strong> ${wager.terms}<br>
-                        <strong>Amount:</strong> $${wager.amount}<br>
-                        <strong>Deadline:</strong> ${formatDeadline(wager.deadline)}<br>
-                        <em>Status: ${wager.status}</em><br>
-                        ${wager.winner ? `<strong>Winner:</strong> ${wager[wager.winner] || wager.winner}<br>` : ""}
-                    </div>
-                `;
+                    if (!isUserInWager || wager.status !== "live") return;
 
-                        // ...after you create `card` and set innerHTML
-                        const actionDiv = document.createElement("div");
-                        actionDiv.className = "wager-actions";
-                        // Append NOW so async UI can appear later
-                        card.appendChild(actionDiv);
+                    const card = document.createElement("div");
+                    card.className = "pending-wager-card";
+                    card.innerHTML = `
+                <div class="wager-info">
+                    <strong>From:</strong> ${wager.createdBy}<br>
+                    <strong>Opponent:</strong> ${wager.opponent}<br>
+                    <strong>Terms:</strong> ${wager.terms}<br>
+                    <strong>Amount:</strong> $${wager.amount}<br>
+                    <strong>Deadline:</strong> ${formatDeadline(wager.deadline)}<br>
+                    <em>Status: ${wager.status}</em><br>
+                    ${wager.resolvedWinner ? `<strong>Winner:</strong> ${wager.resolvedWinner}<br>` : ""}
+                </div>
+            `;
 
-                        // Winner selection UI (unchanged)
-                        if (wager.status === "live" && deadlinePassed && !hasVoted) {
-                            const winnerWrapper = document.createElement("div");
-                            winnerWrapper.style.display = "flex";
-                            winnerWrapper.style.flexDirection = "column";
-                            winnerWrapper.style.alignItems = "center";
-                            winnerWrapper.style.marginTop = "1rem";
+                    const actionDiv = document.createElement("div");
+                    actionDiv.className = "wager-actions";
+                    card.appendChild(actionDiv);
 
-                            const prompt = document.createElement("strong");
-                            prompt.textContent = "Select Winner";
-                            prompt.style.marginBottom = "0.5rem";
-                            winnerWrapper.appendChild(prompt);
+                    // === Case 1: No winner yet → show voting buttons ===
+                    if (!wager.resolvedWinner && Date.now() > new Date(wager.deadline)) {
+                        const winnerWrapper = document.createElement("div");
+                        winnerWrapper.style.display = "flex";
+                        winnerWrapper.style.flexDirection = "column";
+                        winnerWrapper.style.alignItems = "center";
+                        winnerWrapper.style.marginTop = "1rem";
 
-                            const buttonsRow = document.createElement("div");
-                            buttonsRow.style.display = "flex";
-                            buttonsRow.style.gap = "1rem";
-                            buttonsRow.style.justifyContent = "center";
+                        const prompt = document.createElement("strong");
+                        prompt.textContent = "Select Winner";
+                        prompt.style.marginBottom = "0.5rem";
+                        winnerWrapper.appendChild(prompt);
 
-                            const creatorBtn = document.createElement("button");
-                            creatorBtn.textContent = `${wager.createdBy} Won`;
-                            creatorBtn.style.background = "transparent";
-                            creatorBtn.style.padding = "0.5rem 1rem";
-                            creatorBtn.style.border = "2px solid var(--yellow)";
-                            creatorBtn.style.borderRadius = "6px";
-                            creatorBtn.style.color = "var(--yellow)";
-                            creatorBtn.style.fontWeight = "bold";
-                            creatorBtn.style.cursor = "pointer";
+                        const buttonsRow = document.createElement("div");
+                        buttonsRow.style.display = "flex";
+                        buttonsRow.style.gap = "1rem";
+                        buttonsRow.style.justifyContent = "center";
 
-                            const opponentBtn = document.createElement("button");
-                            opponentBtn.textContent = `${wager.opponent} Won`;
-                            opponentBtn.style.background = "transparent";
-                            opponentBtn.style.padding = "0.5rem 1rem";
-                            opponentBtn.style.border = "2px solid var(--yellow)";
-                            opponentBtn.style.borderRadius = "6px";
-                            opponentBtn.style.color = "var(--yellow)";
-                            opponentBtn.style.fontWeight = "bold";
-                            opponentBtn.style.cursor = "pointer";
+                        const creatorBtn = document.createElement("button");
+                        creatorBtn.textContent = `${wager.createdBy} Won`;
+                        creatorBtn.className = "vote-btn";
+                        creatorBtn.onclick = () => {
+                            const voterRole = (window.currentUser.username === wager.createdBy) ? "creator" : "opponent";
+                            submitWinner(id, voterRole, "creator");
+                            creatorBtn.disabled = true;
+                            opponentBtn.disabled = true;
+                            setTimeout(() => winnerWrapper.remove(), 1200);
+                        };
 
-                            creatorBtn.onclick = () => {
-                                creatorBtn.style.background = "var(--yellow)";
-                                opponentBtn.disabled = true;
-                                creatorBtn.disabled = true;
-                                setTimeout(() => winnerWrapper.remove(), 1200);
-                                submitWinner("creator", id);
-                            };
-                            opponentBtn.onclick = () => {
-                                opponentBtn.style.background = "var(--yellow)";
-                                creatorBtn.disabled = true;
-                                opponentBtn.disabled = true;
-                                setTimeout(() => winnerWrapper.remove(), 1200);
-                                submitWinner("opponent", id);
-                            };
+                        const opponentBtn = document.createElement("button");
+                        opponentBtn.textContent = `${wager.opponent} Won`;
+                        opponentBtn.className = "vote-btn";
+                        opponentBtn.onclick = () => {
+                            const voterRole = (window.currentUser.username === wager.createdBy) ? "creator" : "opponent";
+                            submitWinner(id, voterRole, "opponent");
+                            creatorBtn.disabled = true;
+                            opponentBtn.disabled = true;
+                            setTimeout(() => winnerWrapper.remove(), 1200);
+                        };
 
-                            buttonsRow.appendChild(creatorBtn);
-                            buttonsRow.appendChild(opponentBtn);
-                            winnerWrapper.appendChild(buttonsRow);
-                            actionDiv.appendChild(winnerWrapper);
-                        }
-
-                        // Payment/confirmation UI
-                        if (needsPayment) {
-                            // figure out if current user is winner or loser
-                            const current = window.currentUser.username;
-                            const winnerIsCreator = wager.winner === "creator";
-                            const isCurrentUserWinner =
-                                (winnerIsCreator && current === wager.createdBy) ||
-                                (!winnerIsCreator && current === wager.opponent);
-                            const isLoser = !isCurrentUserWinner;
-
-                            // Always show a Confirm button (both users must confirm)
-                            const confirmBtn = document.createElement("button");
-                            confirmBtn.textContent = isLoser ? "Mark as Paid" : "Confirm Received";
-                            confirmBtn.onclick = () => markAsPaid(id);
-                            actionDiv.appendChild(confirmBtn);
-
-                            // Only the loser gets the Venmo deep link
-                            if (isLoser) {
-                                const payeeUsername = winnerIsCreator ? wager.createdBy : wager.opponent;
-                                getVenmoHandle(payeeUsername).then(handle => {
-                                    const display = handle ? `@${handle}` : payeeUsername;
-                                    const note = `Betya wager: ${wager.terms.slice(0, 50)}${wager.terms.length > 50 ? "..." : ""}`;
-                                    const links = buildVenmoLinks(handle || payeeUsername, wager.amount, note);
-
-                                    const payLink = document.createElement("a");
-                                    payLink.href = isMobileDevice() ? links.app : links.web;
-                                    payLink.target = "_blank";
-                                    payLink.textContent = `Pay ${display} on Venmo`;
-                                    payLink.style.display = "inline-block";
-                                    payLink.style.padding = "0.5rem 1rem";
-                                    payLink.style.border = "2px solid var(--yellow)";
-                                    payLink.style.borderRadius = "6px";
-                                    payLink.style.color = "var(--yellow)";
-                                    payLink.style.fontWeight = "bold";
-                                    payLink.style.textDecoration = "none";
-                                    payLink.style.cursor = "pointer";
-                                    payLink.style.marginRight = "0.5rem";
-
-                                    // Insert Pay button before Confirm to read naturally
-                                    actionDiv.insertBefore(payLink, confirmBtn);
-                                });
-                            }
-                        }
-
-                        container.appendChild(card);
+                        buttonsRow.appendChild(creatorBtn);
+                        buttonsRow.appendChild(opponentBtn);
+                        winnerWrapper.appendChild(buttonsRow);
+                        actionDiv.appendChild(winnerWrapper);
                     }
+
+                    // === Case 2: Winner decided → show payment buttons ===
+                    if (wager.resolvedWinner) {
+                        const current = window.currentUser.username;
+                        const isWinner = wager.resolvedWinner === current;
+                        const isLoser = !isWinner;
+
+                        const confirmBtn = document.createElement("button");
+                        confirmBtn.textContent = isLoser ? "Mark as Paid" : "Confirm Received";
+                        confirmBtn.onclick = () => markAsPaid(id);
+                        actionDiv.appendChild(confirmBtn);
+
+                        if (isLoser) {
+                            const payeeUsername = wager.resolvedWinner;
+                            getVenmoHandle(payeeUsername).then(handle => {
+                                const display = handle ? `@${handle}` : payeeUsername;
+                                const note = `Betya wager: ${wager.terms.slice(0, 50)}${wager.terms.length > 50 ? "..." : ""}`;
+                                const links = buildVenmoLinks(handle || payeeUsername, wager.amount, note);
+
+                                const payLink = document.createElement("a");
+                                payLink.href = isMobileDevice() ? links.app : links.web;
+                                payLink.target = "_blank";
+                                payLink.textContent = `Pay ${display} on Venmo`;
+                                payLink.className = "pay-btn";
+
+                                actionDiv.insertBefore(payLink, confirmBtn);
+                            });
+                        }
+                    }
+
+                    container.appendChild(card);
                 });
             });
         }
@@ -1014,43 +2141,478 @@
                     const wager = child.val();
                     const id = child.key;
 
-                    const isUserInWager = wager.opponent === window.currentUser.username || wager.createdBy === window.currentUser.username;
-                    const bothPaid = wager.paidBy && wager.paidBy[wager.createdBy] && wager.paidBy[wager.opponent];
+                    const isUserInWager =
+                        wager.opponent === window.currentUser.username ||
+                        wager.createdBy === window.currentUser.username;
 
-                    if (wager.status === "completed" && bothPaid && isUserInWager) {
-                        const card = document.createElement("div");
-                        card.className = "completed-wager-card";
-                        card.style.background = "rgba(255, 255, 255, 0.05)";
-                        card.style.backdropFilter = "blur(10px)";
-                        card.style.borderRadius = "1rem";
-                        card.style.padding = "1rem";
-                        card.style.marginBottom = "1rem";
-                        card.style.border = "1px solid rgba(255, 255, 255, 0.08)";
-                        card.style.boxShadow = "0 0 10px var(--yellow)";
-                        card.style.color = "white";
-                        card.style.fontSize = "0.95rem";
+                    if (!isUserInWager || wager.status !== "completed") return;
 
-                        card.innerHTML = `
-                    <div class="wager-info">
-                        <strong>From:</strong> ${wager.createdBy}<br>
-                        <strong>Terms:</strong> ${wager.terms}<br>
-                        <strong>Amount:</strong> $${wager.amount}<br>
-                        <strong>Deadline:</strong> ${formatDeadline(wager.deadline)}<br>
-                        <strong>Winner:</strong> ${wager[wager.winner] || wager.winner}<br>
-                        <em>Status: Settled</em>
-                    </div>
-                `;
+                    const card = document.createElement("div");
+                    card.className = "completed-wager-card";
+                    card.innerHTML = `
+                <div class="wager-info">
+                    <strong>From:</strong> ${wager.createdBy}<br>
+                    <strong>Opponent:</strong> ${wager.opponent}<br>
+                    <strong>Terms:</strong> ${wager.terms}<br>
+                    <strong>Amount:</strong> $${wager.amount}<br>
+                    <strong>Winner:</strong> ${wager.resolvedWinner || "TBD"}<br>
+                    <em>Status: Paid ✅</em>
+                </div>
+            `;
 
-                        container.appendChild(card);
-                    }
+                    container.appendChild(card);
                 });
             });
         }
 
-    </script>
+
+
+        // Start of Bottom Icons Buttons
+
+
+        function renderWagerCard(wager) {
+            const card = document.createElement("div");
+            card.className = "timeline-card";
+            card.id = "timeline-" + wager.id;
+
+            // --- Title / Header ---
+            const header = document.createElement("h3");
+            header.textContent = `${wager.createdBy} vs ${wager.opponent}`;
+            card.appendChild(header);
+
+            // --- Terms ---
+            const terms = document.createElement("p");
+            terms.textContent = wager.terms;
+            card.appendChild(terms);
+
+            // --- Amount ---
+            const amount = document.createElement("p");
+            amount.textContent = `Amount: $${wager.amount}`;
+            card.appendChild(amount);
+
+            // --- Likes ---
+            const likeBtn = document.createElement("button");
+            likeBtn.textContent = "👍 Like";
+            likeBtn.onclick = () => {
+                db.ref("wagers/" + wager.id + "/likes")
+                    .transaction(current => (current || 0) + 1);
+            };
+            card.appendChild(likeBtn);
+
+            const likeCount = document.createElement("span");
+            likeCount.id = "likes-" + wager.id;
+            likeCount.textContent = ` ${wager.likes || 0} likes`;
+            card.appendChild(likeCount);
+
+            // --- Comments ---
+            const commentBox = document.createElement("div");
+            commentBox.innerHTML = `
+        <input type="text" id="comment-input-${wager.id}" placeholder="Add a comment..." />
+        <button onclick="addComment('${wager.id}')">Post</button>
+        <div id="comments-${wager.id}"></div>
+    `;
+            card.appendChild(commentBox);
+
+            // --- BetYa Now ---
+            const betyaBtn = document.createElement("button");
+            betyaBtn.textContent = "BetYa Now";
+            betyaBtn.classList.add("betya-now-btn"); // 👈 unique style class
+            betyaBtn.onclick = () => {
+                // Close timeline modal
+                document.getElementById("timeline-modal-overlay").style.display = "none";
+
+                // Auto-fill opponent in wager box
+                document.getElementById("wager-opponent").value = wager.opponent;
+            };
+            card.appendChild(betyaBtn);
+
+            return card; // ✅ important: returns the card, doesn’t append yet
+        }
+
+
+        let timelineInitialized = false;
+
+
+        function initTimeline() {
+            const container = document.getElementById("timeline-feed");
+            container.innerHTML = "";
+
+            db.ref("wagers").once("value").then(snapshot => {
+                const wagers = [];
+
+                snapshot.forEach(child => {
+                    const wager = child.val();
+                    const id = child.key;
+
+                    // Only show completed + public wagers
+                    if (wager.status === "completed" && wager.visibility === "public") {
+                        wagers.push({ id, ...wager });
+                    }
+                });
+
+                // Sort by completion time (newest first)
+                wagers.sort((a, b) => (b.completedAt || 0) - (a.completedAt || 0));
+
+                // Use the interactive renderer for each wager
+                wagers.forEach(wager => {
+                    const card = renderWagerCard(wager);  // ✅ call your existing renderer
+                    container.appendChild(card);          // append returned card
+                });
+            });
+        }
+
+
+        function openTimelineModal() {
+            document.getElementById("timeline-modal-overlay").style.display = "flex";
+
+            // initialize only once
+            if (!timelineInitialized) {
+                initTimeline();
+                timelineInitialized = true;
+            }
+        }
+
+
+        function timeAgo(timestamp) {
+            if (!timestamp) return "";
+            const now = Date.now();
+            const diff = Math.floor((now - timestamp) / 1000);
+            if (diff < 60) return diff + "s ago";
+            if (diff < 3600) return Math.floor(diff / 60) + "m ago";
+            if (diff < 86400) return Math.floor(diff / 3600) + "h ago";
+            return Math.floor(diff / 86400) + "d ago";
+        }
+
+
+        function closeTimelineModal() {
+            const overlay = document.getElementById('timeline-modal-overlay');
+            overlay.style.display = 'none'; // ✅ hide again
+        }
+
+
+        function renderWagerCard(w) {
+            const card = document.createElement('div');
+            card.className = 'timeline-card';
+            card.dataset.wagerId = w.id;
+            card.dataset.username = w.createdBy;
+
+            card.innerHTML = `
+        <div class="timeline-info">
+            <strong>${w.createdBy}</strong> vs <strong>${w.opponent}</strong><br>
+            <em>Terms:</em> ${w.terms}<br>
+            <em>Amount:</em> $${w.amount}<br>
+            <em>Winner:</em> ${w.resolvedWinner || "TBD"} 🏆 (+25 XP 🪙)
+        </div>
+
+        <div class="wager-actions">
+            <button class="like-btn">♥ <span class="like-count">${w.likesCount || 0}</span></button>
+            <button class="comment-toggle">💬 Comments</button>
+            <button class="betya-now-btn">⚡ BetYa Now</button>
+        </div>
+
+        <div class="comments-panel" style="display:none;">
+            <div class="comments-list"></div>
+            <form class="comment-form">
+                <input type="text" class="comment-input" placeholder="Write a comment…" />
+                <button type="submit">Post</button>
+            </form>
+        </div>
+    `;
+
+            // === Button Logic ===
+
+            // Like
+            card.querySelector('.like-btn').addEventListener('click', () => {
+                toggleLike(w.id, card);
+            });
+
+            // Toggle comments
+            card.querySelector('.comment-toggle').addEventListener('click', () => {
+                const panel = card.querySelector('.comments-panel');
+                panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+                loadComments(w.id, card);
+            });
+
+            // Post comment
+            card.querySelector('.comment-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const text = card.querySelector('.comment-input').value.trim();
+                if (text) postComment(w.id, text, card);
+                card.querySelector('.comment-input').value = '';
+            });
+
+            // BetYa Now
+            card.querySelector('.betya-now-btn').addEventListener('click', () => {
+                betyaNowPrefill(w.opponent); // auto-fill opponent
+            });
+
+            return card; // return so initTimeline can append into #timeline-feed
+        }
+
+
+
+        function toggleLike(wagerId, card) {
+            // basic write to Firebase
+            const likeRef = db.ref(`wagers/${wagerId}/likes/${window.currentUser.uid}`);
+            likeRef.set(true).then(() => {
+                const countEl = card.querySelector('.like-count');
+                countEl.textContent = parseInt(countEl.textContent) + 1;
+            });
+        }
+
+        function loadComments(wagerId, card) {
+            const list = card.querySelector('.comments-list');
+            list.innerHTML = '';
+            db.ref(`wagers/${wagerId}/comments`).limitToLast(10).once('value').then(snap => {
+                snap.forEach(c => {
+                    const data = c.val();
+                    const div = document.createElement('div');
+                    div.className = 'comment';
+                    div.textContent = `@${data.username}: ${data.text}`;
+                    list.appendChild(div);
+                });
+            });
+        }
+
+        function postComment(wagerId, text, card) {
+            const id = db.ref().push().key;
+            const payload = {
+                uid: window.currentUser.uid,
+                username: window.currentUser.username,
+                text,
+                createdAt: Date.now()
+            };
+            db.ref(`wagers/${wagerId}/comments/${id}`).set(payload).then(() => {
+                loadComments(wagerId, card);
+            });
+        }
+
+        function betyaNowPrefill(username) {
+            closeTimelineModal(); // hide timeline
+            document.getElementById('wager-opponent').value = username;
+            document.getElementById('wager-terms').focus();
+        }
+
+
+
+
+        // Open Help Modal
+        document.getElementById("helpBtn").addEventListener("click", () => {
+            document.getElementById("help-modal-overlay").style.display = "flex";
+        });
+
+        // Close Help Modal
+        function closeHelpModal() {
+            document.getElementById("help-modal-overlay").style.display = "none";
+        }
+
+        // Accordion toggle
+        document.querySelectorAll(".faq-question").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const answer = btn.nextElementSibling;
+                answer.classList.toggle("open");
+            });
+        });
+
+
+
+        // Suggestions Modal Open/Close
+        function openSuggestionsModal() {
+            document.getElementById("suggestions-modal-overlay").style.display = "flex";
+        }
+
+        function closeSuggestionsModal() {
+            document.getElementById("suggestions-modal-overlay").style.display = "none";
+        }
+
+
+
+        // Leaderboard Modal Open/Close
+        function openLeaderboardModal() {
+            document.getElementById("leaderboard-modal-overlay").style.display = "flex";
+            loadLeaderboard();
+        }
+
+        function closeLeaderboardModal() {
+            document.getElementById("leaderboard-modal-overlay").style.display = "none";
+        }
+
+        function loadLeaderboard() {
+            const list = document.getElementById("leaderboard-list");
+            const userRankBox = document.getElementById("leaderboard-user-rank");
+            list.innerHTML = "<p>Loading...</p>";
+            userRankBox.innerHTML = "";
+
+            db.ref("users")
+                .orderByChild("xp_balance")
+                .once("value")
+                .then(snapshot => {
+                    const users = [];
+                    snapshot.forEach(child => {
+                        users.push({
+                            username: child.val().username,
+                            xp: child.val().xp_balance || 0,
+                            uid: child.key
+                        });
+                    });
+
+                    // Sort descending
+                    users.sort((a, b) => b.xp - a.xp);
+
+                    // Build leaderboard list
+                    list.innerHTML = "";
+                    users.slice(0, 10).forEach((u, i) => {
+                        const row = document.createElement("div");
+                        row.className = "leaderboard-row";
+                        if (i === 0) row.classList.add("gold");
+                        if (i === 1) row.classList.add("silver");
+                        if (i === 2) row.classList.add("bronze");
+
+                        row.innerHTML = `
+          <span class="rank">#${i + 1}</span>
+          <span class="username">@${u.username}</span>
+          <span class="xp">
+  ${u.xp} XP 
+  <img src="xp-toast-icon.png" alt="XP" class="xp-icon">
+</span>
+
+        `;
+                        list.appendChild(row);
+                    });
+
+                    // Find current user rank
+                    if (window.currentUser) {
+                        const currentIndex = users.findIndex(u => u.uid === window.currentUser.uid);
+                        if (currentIndex >= 0) {
+                            const currentUser = users[currentIndex];
+                            userRankBox.innerHTML = `Your Rank: #${currentIndex + 1} — ${currentUser.xp} XP <img src="xp-toast-icon.png" alt="XP" class="xp-icon">`;
+                        }
+                    }
+                });
+        }
+
+
+
+
+        function showXpToast(amount, reason = "XP Earned") {
+            const container = document.getElementById("xp-toast-container");
+            if (!container) return;
+
+            const toast = document.createElement("div");
+            toast.className = "xp-toast";
+            toast.innerHTML = `
+    <img src="xp-toast-icon.png" alt="XP Icon"> 
+    +${amount} XP — ${reason}
+  `;
+
+            container.appendChild(toast);
+
+            // Auto-remove after 3s
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
 
     </script>
 
+    <script>
+        // --- Firebase Config ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyCf730VWvXKqmpYtF5RddI2GAnCd0jLTcU",
+            authDomain: "betya-a767f.firebaseapp.com",
+            databaseURL: "https://betya-a767f-default-rtdb.firebaseio.com", // ✅ real URL
+            projectId: "betya-a767f",
+            storageBucket: "betya-a767f.appspot.com",
+            messagingSenderId: "944512270849",
+            appId: "1:944512270849:web:6dcea5b5c91fe56f66b600"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // --- Restore cached user on load ---
+        const cachedUser = localStorage.getItem("betyaUser");
+        if (cachedUser) {
+            window.currentUser = JSON.parse(cachedUser);
+            console.log("⚡ Restored user from cache:", window.currentUser);
+            updateUIWithUser(window.currentUser); // ✅ runs after DOM is built
+        } else {
+            window.currentUser = null;
+            console.log("🚪 No user found, not logged in.");
+        }
+
+        // --- Helper: Update UI when user is set ---
+        function updateUIWithUser(user) {
+            if (!user) return;
+
+            // Welcome banner
+            const welcomeEl = document.querySelector(".welcome");
+            if (welcomeEl) welcomeEl.textContent = `Welcome, ${user.username}`;
+
+            // Auth buttons vs logged-in UI
+            const authBtns = document.getElementById("auth-buttons");
+            const userInfo = document.getElementById("user-info");
+            const userDisplay = document.getElementById("user-display");
+
+            if (authBtns && userInfo && userDisplay) {
+                authBtns.style.display = "none";
+                userInfo.style.display = "block";
+                userDisplay.textContent = user.username;
+            }
+
+            // Profile modal
+            const profileNameEl = document.getElementById("profile-username");
+            if (profileNameEl) profileNameEl.textContent = user.username;
+
+            const profileXpEl = document.getElementById("profile-xp");
+            if (profileXpEl) profileXpEl.textContent = `${user.xp_balance || 0} XP`;
+
+            // Any other UI setup
+            if (typeof updateProfileButtonStatus === "function") {
+                updateProfileButtonStatus();
+            }
+        }
+
+        // --- Save user after login/signup ---
+        function saveUserSession(userData) {
+            window.currentUser = userData;
+            localStorage.setItem("betyaUser", JSON.stringify(userData));
+            updateUIWithUser(userData);
+            console.log("✅ User saved to session:", window.currentUser);
+        }
+
+
+        // Logout Button
+        function logout() {
+            // Clear cache
+            localStorage.removeItem("betyaUser");
+            window.currentUser = null;
+
+            // Reset UI
+            const welcomeEl = document.querySelector(".welcome");
+            if (welcomeEl) welcomeEl.textContent = "Welcome";
+
+            const authBtns = document.getElementById("auth-buttons");
+            const userInfo = document.getElementById("user-info");
+            if (authBtns && userInfo) {
+                authBtns.style.display = "block"; // show login/signup
+                userInfo.style.display = "none";  // hide user info
+            }
+
+            // Close profile modal if open
+            const profileModal = document.getElementById("profile-modal-overlay");
+            if (profileModal) profileModal.style.display = "none";
+
+            console.log("👋 User logged out.");
+        }
+
+
+
+    </script>
+
+
+    </script>
 </body>
 
 </html>
