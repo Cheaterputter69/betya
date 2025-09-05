@@ -418,16 +418,11 @@
         }
 
         .bottom-icon-bar img {
-            width: 55px;
-            height: 55px;
-            object-fit: contain;
-            /* keeps aspect ratio inside the box */
-            padding: 4px;
-            /* optional: adds uniform breathing room */
-            box-sizing: border-box;
-            /* ensures padding doesn’t push beyond 45x45 */
+            width: 45px;
+            height: 45px;
+            cursor: pointer;
+            animation: pulseGlow 2s infinite;
         }
-
 
         /* Icon Bottom Button Modals */
         #timeline-modal-overlay {
@@ -516,11 +511,6 @@
                 filter: drop-shadow(0 0 3px var(--yellow));
             }
         }
-
-        .bottom-icon-bar img {
-            animation: pulseGlow 2s infinite;
-        }
-
 
         /* === Timeline Card Enhancements === */
         .wager-card {
@@ -1265,12 +1255,13 @@
             <h2>Suggestions</h2>
             <p>Please submit your suggestions in the proper fields below. Tap the button to send us your feedback.</p>
 
-            <a href="mailto:youraddress@email.com?subject=Betya%20Suggestion&body=Hi%20Betya%20Team,%0D%0A%0D%0AMy%20suggestion%20is:%20"
+            <a href="mailto:contact.betya.us@gmail.com?subject=Betya%20Suggestion&body=Hi%20Betya%20Team,%0D%0A%0D%0AMy%20suggestion%20is:%20"
                 target="_blank">
                 <button class="neon-btn">Submit via Email</button>
             </a>
-
+             <!--
             <button class="close-secondary-btn" onclick="closeSuggestionsModal()">Close</button>
+            -->
         </div>
     </div>
 
