@@ -4,7 +4,21 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Betya UI Only</title>
+    <title>Betya</title>
+
+    <!-- App Manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Theme color for the status bar -->
+    <meta name="theme-color" content="#dbf93a">
+
+    <!-- Icons for mobile home screen -->
+    <link rel="apple-touch-icon" sizes="192x192" href="logo-192.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="logo-512.png">
+
+    <!-- Favicon for browser tabs -->
+    <link rel="icon" type="image/png" sizes="32x32" href="logo-192.png">
+
     <style>
         :root {
             --yellow: #dbf93a;
@@ -243,6 +257,29 @@
             color: #000;
             border-color: var(--yellow);
             box-shadow: 0 0 18px rgba(219, 249, 58, 0.6), inset 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .suggestions-box {
+            position: relative;
+            background: rgba(20, 20, 20, 0.95);
+            border: 1px solid var(--yellow);
+            border-radius: 8px;
+            margin-top: 2px;
+            max-height: 150px;
+            overflow-y: auto;
+            width: 100%;
+            z-index: 1500;
+            display: none;
+        }
+
+        .suggestions-box div {
+            padding: 8px 12px;
+            cursor: pointer;
+            color: var(--yellow);
+        }
+
+        .suggestions-box div:hover {
+            background: rgba(255, 255, 255, 0.1);
         }
 
 
@@ -1102,11 +1139,6 @@
         }
     </style>
 
-    <!-- Firebase v8 SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
 
 </head>
 
@@ -1133,10 +1165,13 @@
         <div class="welcome">Welcome, Betya User</div>
 
         <div class="glass-card">
-            <input type="text" placeholder="Opponent" id="wager-opponent" />
+            <input type="text" placeholder="Opponent" id="wager-opponent" autocomplete="off" />
+            <div id="opponent-suggestions" class="suggestions-box"></div>
+
             <textarea placeholder="Wager Terms (4–5 lines)" id="wager-terms"></textarea>
             <input type="number" placeholder="Amount" id="wager-amount" />
             <input type="datetime-local" id="wager-datetime" />
+
             <div class="wager-actions">
                 <button id="placeWagerBtn" class="btn btn--primary" type="button">PLACE WAGER</button>
                 <button id="privateToggleBtn" class="btn btn--ghost" type="button">PRIVATE</button>
@@ -1259,7 +1294,7 @@
                 target="_blank">
                 <button class="neon-btn">Submit via Email</button>
             </a>
-             <!--
+            <!--
             <button class="close-secondary-btn" onclick="closeSuggestionsModal()">Close</button>
             -->
         </div>
@@ -1395,6 +1430,31 @@
     <!-- Start of Functions -->
 
     <!-- Your Firebase + wager logic -->
+
+    <!-- Firebase v8 SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <script>
+        // --- Firebase Config ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyCf730VWvXKqmpYtF5RddI2GAnCd0jLTcU",
+            authDomain: "betya-a767f.firebaseapp.com",
+            databaseURL: "https://betya-a767f-default-rtdb.firebaseio.com", // ✅ real URL
+            projectId: "betya-a767f",
+            storageBucket: "betya-a767f.appspot.com",
+            messagingSenderId: "944512270849",
+            appId: "1:944512270849:web:6dcea5b5c91fe56f66b600"
+        };
+
+        // ✅ Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        // ✅ Define db for use everywhere
+        const db = firebase.database();
+    </script>
+
     <script>
         // Grab elements safely
         const placeWagerBtn = document.getElementById("placeWagerBtn");
@@ -1432,19 +1492,25 @@
                 return;
             }
 
-            const wagerData = {
-                createdBy: window.currentUser.username,
-                opponent,
-                terms,
-                amount,
-                deadline,
-                visibility,
-                status: "pending",
-                createdAt: Date.now(),
-            };
+            // ✅ Opponent Validation
+            db.ref("usernames/" + opponent).once("value").then(oppSnap => {
+                if (!oppSnap.exists()) {
+                    alert("❌ Opponent username not found. Please select a valid user.");
+                    throw new Error("Invalid opponent"); // stop execution
+                }
 
-            db.ref("wagers").push(wagerData)
-                .then(() => {
+                const wagerData = {
+                    createdBy: window.currentUser.username,
+                    opponent,
+                    terms,
+                    amount,
+                    deadline,
+                    visibility,
+                    status: "pending",
+                    createdAt: Date.now(),
+                };
+
+                return db.ref("wagers").push(wagerData).then(() => {
                     console.log("✅ Wager saved:", wagerData);
                     alert("Wager submitted!");
 
@@ -1481,12 +1547,10 @@
                             })
                             .then(() => {
                                 // Step 2: Opponent Callout Bonus
-                                return db.ref("usernames/" + opponent).once("value").then(oppSnap => {
-                                    if (oppSnap.exists()) {
-                                        const opponentUid = oppSnap.val();
-                                        return awardXP(opponentUid, 10, "Called Out");
-                                    }
-                                });
+                                const opponentUid = oppSnap.val();
+                                if (opponentUid) {
+                                    return awardXP(opponentUid, 10, "Called Out");
+                                }
                             })
                             .catch(err => {
                                 console.error("❌ XP chain failed:", err);
@@ -1500,10 +1564,13 @@
                     document.getElementById("wager-datetime").value = "";
                     visibilityField.value = "public";
                     privateToggleBtn.classList.remove("is-active");
-                })
+                });
+            })
                 .catch(error => {
-                    console.error("❌ Error saving wager:", error);
-                    alert("Failed to submit wager. Please try again.");
+                    if (error.message !== "Invalid opponent") {
+                        console.error("❌ Error saving wager:", error);
+                        alert("Failed to submit wager. Please try again.");
+                    }
                 });
         });
 
@@ -1684,6 +1751,57 @@
                     .catch(error => alert(error.message));
             }
         }
+
+
+        // This populates my Oppenent 
+        const opponentInput = document.getElementById("wager-opponent");
+        const suggestionsBox = document.getElementById("opponent-suggestions");
+
+        // Cache usernames once
+        let allUsernames = [];
+        db.ref("usernames").once("value").then(snapshot => {
+            allUsernames = Object.keys(snapshot.val() || {});
+        });
+
+        opponentInput.addEventListener("input", () => {
+            const query = opponentInput.value.toLowerCase().trim();
+            suggestionsBox.innerHTML = "";
+
+            if (!query) {
+                suggestionsBox.style.display = "none";
+                return;
+            }
+
+            const matches = allUsernames.filter(name =>
+                name.toLowerCase().includes(query)
+            ).slice(0, 5);
+
+            if (matches.length === 0) {
+                suggestionsBox.style.display = "none";
+                return;
+            }
+
+            matches.forEach(name => {
+                const div = document.createElement("div");
+                div.textContent = name;
+                div.onclick = () => {
+                    opponentInput.value = name;
+                    suggestionsBox.style.display = "none";
+                };
+                suggestionsBox.appendChild(div);
+            });
+
+            suggestionsBox.style.display = "block";
+        });
+
+        // Hide if clicked elsewhere
+        document.addEventListener("click", (e) => {
+            if (e.target !== opponentInput) {
+                suggestionsBox.style.display = "none";
+            }
+        });
+
+
 
 
         function openProfileModal() {
@@ -2518,21 +2636,8 @@
     </script>
 
     <script>
-        // --- Firebase Config ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyCf730VWvXKqmpYtF5RddI2GAnCd0jLTcU",
-            authDomain: "betya-a767f.firebaseapp.com",
-            databaseURL: "https://betya-a767f-default-rtdb.firebaseio.com", // ✅ real URL
-            projectId: "betya-a767f",
-            storageBucket: "betya-a767f.appspot.com",
-            messagingSenderId: "944512270849",
-            appId: "1:944512270849:web:6dcea5b5c91fe56f66b600"
-        };
 
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-
-        // --- Restore cached user on load ---
+        // -- Restore cached user on load ---
         const cachedUser = localStorage.getItem("betyaUser");
         if (cachedUser) {
             window.currentUser = JSON.parse(cachedUser);
@@ -2598,7 +2703,7 @@
             const userInfo = document.getElementById("user-info");
             if (authBtns && userInfo) {
                 authBtns.style.display = "block"; // show login/signup
-                userInfo.style.display = "none";  // hide user info
+                userInfo.style.display = "none"; // hide user info
             }
 
             // Close profile modal if open
@@ -2611,8 +2716,17 @@
 
 
     </script>
+    <script>
 
-
+        // Icon Load For The Wallpaper App Logo
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("sw.js").then(() => {
+                console.log("✅ Service Worker registered");
+            }).catch(err => {
+                console.error("❌ Service Worker failed:", err);
+            });
+        }
+    </script>
     </script>
 </body>
 
